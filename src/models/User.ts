@@ -1,13 +1,13 @@
 import { Schema, model } from 'mongoose';
 
-export interface IFounder {
+export interface IUser {
     name: string;
     profile?: string;
     eth_address: string;
     email: string;
 }
 
-const founderSchema = new Schema<IFounder>({
+const userSchema = new Schema<IUser>({
     name: {
         type: String,
         required: true
@@ -23,6 +23,6 @@ const founderSchema = new Schema<IFounder>({
     }
 });
 
-const Founder = model<IFounder>('Founder', founderSchema, 'founders');
+const User = model<IUser>('User', userSchema, 'users');
 
-export default Founder;
+export default User;
