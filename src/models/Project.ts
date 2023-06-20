@@ -1,4 +1,4 @@
-import { ObjectId, Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 
 export enum ProjectStatus {
     'In Review',
@@ -9,25 +9,25 @@ export enum ProjectStatus {
 
 export interface IProject {
     title: string;
-    founder: ObjectId;
+    founder: Types.ObjectId;
     description: string;
     video_url: string;
     tldr: string;
     brief:
-        | 'The Enchantress'
-        | 'The Healer'
-        | 'The Mediator'
-        | 'The Teacher'
-        | 'The Artist'
+        | 'Enchantress'
+        | 'Healer'
+        | 'Mediator'
+        | 'Teacher'
+        | 'Artist'
         | 'Other';
     inspiration: string;
     team: { name: string; bio?: string; email: string }[];
     collaborators?: string;
     waitlist: boolean;
-    milestones: string[];
+    milestones: { amount: number; text: string }[];
     edition_price: number;
     mint_end_date: string;
-    benefits: string[];
+    benefits: { amount: number; text: string }[];
     admin_address: string;
     status: ProjectStatus;
 }
@@ -58,11 +58,11 @@ const projectSchema = new Schema<IProject>({
         type: String,
         required: true,
         enum: [
-            'The Enchantress',
-            'The Healer',
-            'The Mediator',
-            'The Teacher',
-            'The Artist',
+            'Enchantress',
+            'Healer',
+            'Mediator',
+            'Teacher',
+            'Artist',
             'Other'
         ]
     },
@@ -77,7 +77,7 @@ const projectSchema = new Schema<IProject>({
                 bio: String,
                 email: { type: String, required: true }
             },
-            { id: false }
+            { _id: false }
         )
     ],
     collaborators: String,
@@ -86,7 +86,15 @@ const projectSchema = new Schema<IProject>({
         required: true,
         default: false
     },
-    milestones: [String],
+    milestones: [
+        new Schema(
+            {
+                amount: { type: Number, required: true },
+                text: { type: Number, required: true }
+            },
+            { _id: false }
+        )
+    ],
     edition_price: {
         type: Number,
         required: true
@@ -95,7 +103,15 @@ const projectSchema = new Schema<IProject>({
         type: String, // ISO Datestring
         required: true
     },
-    benefits: [String],
+    benefits: [
+        new Schema(
+            {
+                amount: { type: Number, required: true },
+                text: { type: Number, required: true }
+            },
+            { _id: false }
+        )
+    ],
     admin_address: {
         type: String,
         required: true
