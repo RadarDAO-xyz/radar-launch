@@ -6,5 +6,6 @@ module.exports = {
     rules: {
         'prettier/prettier': ['warn']
     },
-    root: true
+    root: true,
+    ignorePatterns: ['js/**/*']
 };
