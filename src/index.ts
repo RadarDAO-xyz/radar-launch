@@ -6,10 +6,12 @@ import { connect } from 'mongoose';
 import { AddressInfo } from 'net';
 import ProjectsRouter from './paths/projects';
 import UsersRouter from './paths/users';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
 app.use(json());
+app.use(cookieParser());
 
 app.use('/projects', ProjectsRouter);
 app.use('/users', UsersRouter);

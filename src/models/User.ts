@@ -3,24 +3,27 @@ import { Schema, model } from 'mongoose';
 export interface IUser {
     name: string;
     profile?: string;
-    eth_address: string;
-    email: string;
+    wallet_address: string;
+    email?: string;
+    session_cookie: string;
 }
 
 const userSchema = new Schema<IUser>({
     name: {
         type: String,
-        required: true
+        required: true,
+        default: 'Your name'
     },
     profile: String,
-    eth_address: {
+    wallet_address: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     email: {
-        type: String,
-        required: true
-    }
+        type: String
+    },
+    session_cookie: String
 });
 
 const User = model<IUser>('User', userSchema, 'users');

@@ -23,7 +23,12 @@ type User = Document<unknown, Record<string, never>, IUser> &
 export function authenticate(required = false) {
     return async function (req: Request, res: Response, next: NextFunction) {
         if (req.user) return next();
-        req.user = (await User.findById('')) ?? undefined;
+        if (req.cookies.session) {
+            req.user =
+                (await User.findOne({
+                    session_cookie: req.cookies.session
+                })) ?? undefined;
+        }
         if (!req.user && required) return res.status(401).end();
         req.bypass = false;
         next();
