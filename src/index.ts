@@ -7,12 +7,14 @@ import { AddressInfo } from 'net';
 import ProjectsRouter from './paths/projects';
 import UsersRouter from './paths/users';
 import cookieParser from 'cookie-parser';
+import LoginRouter from './paths/login';
 
 const app = express();
 
 app.use(json());
 app.use(cookieParser());
 
+app.use('/login', LoginRouter);
 app.use('/projects', ProjectsRouter);
 app.use('/users', UsersRouter);
 
