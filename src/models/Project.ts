@@ -91,7 +91,7 @@ const projectSchema = new Schema<IProject>(
             new Schema(
                 {
                     amount: { type: Number, required: true },
-                    text: { type: Number, required: true }
+                    text: { type: String, required: true }
                 },
                 { _id: false }
             )
@@ -108,7 +108,7 @@ const projectSchema = new Schema<IProject>(
             new Schema(
                 {
                     amount: { type: Number, required: true },
-                    text: { type: Number, required: true }
+                    text: { type: String, required: true }
                 },
                 { _id: false }
             )
@@ -119,7 +119,9 @@ const projectSchema = new Schema<IProject>(
         },
         status: {
             type: Number,
-            required: true
+            required: true,
+            emum: [0, 1, 2, 3],
+            default: 0
         }
     },
     { timestamps: true }
