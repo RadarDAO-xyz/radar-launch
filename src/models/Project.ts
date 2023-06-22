@@ -41,7 +41,7 @@ const projectSchema = new Schema<IProject>(
         founder: {
             type: Schema.Types.ObjectId,
             required: true,
-            ref: 'Founder'
+            ref: 'User'
         },
         description: {
             type: String,
