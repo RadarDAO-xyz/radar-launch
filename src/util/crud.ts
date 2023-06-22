@@ -4,6 +4,7 @@ import {
     Document,
     FilterQuery,
     Model,
+    MongooseError,
     ProjectionType,
     QueryOptions,
     Types,
@@ -63,10 +64,17 @@ export function create(
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
 
-        const isValid = await model.validate(docData).catch(() => false);
-        if (!isValid) return res.status(400).end();
-
-        const doc = await model.create(isValid);
+        const doc = await model.create(docData).catch((r: MongooseError) => {
+            if (r.name === 'ValidationError') {
+                res.status(400)
+                    .json({
+                        error: r.name,
+                        message: r.message
+                    })
+                    .end();
+            }
+        });
+        if (!doc) return;
 
         res.json(doc.toJSON()).end();
     };
@@ -153,7 +161,20 @@ export function update(
             }
         }
 
-        await doc.set(req.body).save();
+        const result = await doc
+            .set(req.body)
+            .save()
+            .catch((r: MongooseError) => {
+                if (r.name === 'ValidationError') {
+                    res.status(400)
+                        .json({
+                            error: r.name,
+                            message: r.message
+                        })
+                        .end();
+                }
+            });
+        if (!result) return;
 
         res.json(doc.toJSON()).end();
     };
