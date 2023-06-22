@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express';
-import { Document, Model, Types } from 'mongoose';
+import {
+    Document,
+    FilterQuery,
+    Model,
+    ProjectionType,
+    QueryOptions,
+    Types
+} from 'mongoose';
 
 type CheckAuthorizedFunc = (
     req: Request,
@@ -76,6 +83,36 @@ export function read(
         const doc = req.doc || (await model.findById(id));
 
         doc ? res.json(doc.toJSON()) : res.status(404);
+        res.end();
+    };
+}
+
+export function readMany(
+    model: Model<any>,
+    checkAuthorized: CheckAuthorizedFunc = () => true,
+    params: {
+        filter: (req: Request, res: Response) => FilterQuery<any>;
+        projection?: (
+            req: Request,
+            res: Response
+        ) => ProjectionType<any> | null | undefined;
+        options?: (
+            req: Request,
+            res: Response
+        ) => QueryOptions<any> | null | undefined;
+    } = { filter: () => ({}) }
+) {
+    return async function (req: Request, res: Response) {
+        if (!(await checkAuthorized(req, res)) && !req.bypass)
+            return res.status(403).end();
+
+        const filter = params.filter(req, res);
+        const projection = params.projection?.(req, res) ?? undefined;
+        const opts = params.options?.(req, res) ?? undefined;
+
+        const docs = await model.find(filter, projection, opts);
+
+        docs ? res.json(docs.map((doc) => doc.toJSON())) : res.status(404);
         res.end();
     };
 }

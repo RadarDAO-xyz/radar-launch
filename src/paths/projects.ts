@@ -1,11 +1,12 @@
 import { Router, Request, NextFunction, Response } from 'express';
 import Project from '../models/Project';
 import { authenticate } from '../util/auth';
-import { create, del, prefetch, read, update } from '../util/crud';
+import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import { Types } from 'mongoose';
 
 const ProjectsRouter = Router();
 
+ProjectsRouter.get('/', readMany(Project));
 ProjectsRouter.get('/:id', read(Project));
 
 interface ProjectsPostRequest extends Request {
