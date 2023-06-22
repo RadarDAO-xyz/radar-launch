@@ -122,7 +122,14 @@ export function readMany(
 
 export function update(
     model: Model<any>,
-    checkAuthorized: CheckAuthorizedFunc = () => true
+    checkAuthorized: CheckAuthorizedFunc = () => true,
+    checks:
+        | {
+              deniedFields: string[];
+          }
+        | {
+              allowedFields: string[];
+          } = { deniedFields: [] }
 ) {
     return async function (req: Request, res: Response) {
         const id = req.params.id;
@@ -133,6 +140,18 @@ export function update(
 
         const doc = req.doc || (await model.findById(id));
         if (!doc) return res.status(404).end();
+
+        if (!req.bypass) {
+            if ('deniedFields' in checks) {
+                checks.deniedFields.forEach((f) => delete req.body[f]);
+            } else if ('allowedFields' in checks) {
+                const newobj: Record<string, any> = {};
+                checks.allowedFields.forEach(
+                    (f) => f in req.body && (newobj[f] = req.body[f])
+                );
+                req.body = newobj;
+            }
+        }
 
         await doc.set(req.body).save();
 
