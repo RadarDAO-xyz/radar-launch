@@ -6,6 +6,13 @@ import Project from '../models/Project';
 
 const UsersRouter = Router();
 
+UsersRouter.use(authenticate());
+
+UsersRouter.get('/@me', (req, res) => {
+    req.user ? res.json(req.user.toObject()) : res.status(401);
+    res.end();
+});
+
 UsersRouter.get('/:id', read(User));
 
 UsersRouter.use(authenticate(true));
