@@ -1,7 +1,7 @@
 import './globals';
 import { config } from 'dotenv';
 config();
-import express, { Router, json } from 'express';
+import express, { json } from 'express';
 import { connect } from 'mongoose';
 import { AddressInfo } from 'net';
 import ProjectsRouter from './paths/projects';
@@ -10,16 +10,13 @@ import cookieParser from 'cookie-parser';
 import LoginRouter from './paths/login';
 
 const app = express();
-const router = Router();
 
-router.use(json());
-router.use(cookieParser());
+app.use(json());
+app.use(cookieParser());
 
-router.use('/login', LoginRouter);
-router.use('/projects', ProjectsRouter);
-router.use('/users', UsersRouter);
-
-app.use('/launch', router);
+app.use('/login', LoginRouter);
+app.use('/projects', ProjectsRouter);
+app.use('/users', UsersRouter);
 
 connect(process.env.MONGO_URL).then(() => console.log('MongoDB connected'));
 
