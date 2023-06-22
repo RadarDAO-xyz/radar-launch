@@ -26,6 +26,10 @@ const userSchema = new Schema<IUser>({
     session_cookie: String
 });
 
+userSchema.method('toJSON', function () {
+    return { name: this.name, profile: this.profile };
+});
+
 const User = model<IUser>('User', userSchema, 'users');
 
 export default User;

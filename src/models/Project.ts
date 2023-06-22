@@ -122,6 +122,10 @@ const projectSchema = new Schema<IProject>({
     }
 });
 
+projectSchema.method('toJSON', function () {
+    return { ...this.toObject(), admin_address: undefined, team: undefined };
+});
+
 const Project = model<IProject>('Project', projectSchema, 'projects');
 
 export default Project;
