@@ -17,7 +17,7 @@ UsersRouter.get('/:id', read(User));
 
 UsersRouter.use(authenticate(true));
 
-UsersRouter.put(
+UsersRouter.patch(
     '/:id',
     update(User, (req) => req.user?._id.toString() === req.params.id, {
         allowedFields: ['name', 'profile', 'email']

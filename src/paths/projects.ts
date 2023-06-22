@@ -48,7 +48,7 @@ ProjectsRouter.post('/', create(Project));
 
 ProjectsRouter.use(prefetch(Project));
 
-ProjectsRouter.put(
+ProjectsRouter.patch(
     '/:id',
     update(
         Project,
