@@ -12,7 +12,9 @@ UsersRouter.use(authenticate(true));
 
 UsersRouter.put(
     '/:id',
-    update(User, (req) => req.user?._id.toString() === req.params.id)
+    update(User, (req) => req.user?._id.toString() === req.params.id, {
+        allowedFields: ['name', 'profile', 'email']
+    })
 );
 UsersRouter.delete(
     '/:id',
