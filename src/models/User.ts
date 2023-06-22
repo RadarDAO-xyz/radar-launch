@@ -8,23 +8,26 @@ export interface IUser {
     session_cookie: string;
 }
 
-const userSchema = new Schema<IUser>({
-    name: {
-        type: String,
-        required: true,
-        default: 'Your name'
+const userSchema = new Schema<IUser>(
+    {
+        name: {
+            type: String,
+            required: true,
+            default: 'Your name'
+        },
+        profile: String,
+        wallet_address: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        email: {
+            type: String
+        },
+        session_cookie: String
     },
-    profile: String,
-    wallet_address: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    email: {
-        type: String
-    },
-    session_cookie: String
-});
+    { timestamps: true }
+);
 
 userSchema.method('toJSON', function () {
     return { name: this.name, profile: this.profile };

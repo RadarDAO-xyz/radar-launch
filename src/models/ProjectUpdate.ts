@@ -5,17 +5,20 @@ export interface IProjectUpdate {
     text: string;
 }
 
-const projectUpdateSchema = new Schema<IProjectUpdate>({
-    project: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: 'Project'
+const projectUpdateSchema = new Schema<IProjectUpdate>(
+    {
+        project: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Project'
+        },
+        text: {
+            type: String,
+            required: true
+        }
     },
-    text: {
-        type: String,
-        required: true
-    }
-});
+    { timestamps: true }
+);
 
 const ProjectUpdate = model<IProjectUpdate>(
     'ProjectUpdate',
