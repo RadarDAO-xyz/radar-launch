@@ -53,7 +53,7 @@ ProjectsRouter.put(
     update(
         Project,
         (req) => req.doc?.founder.toString() === req.user?._id.toString(),
-        { deniedFields: ['status'] }
+        { deniedFields: ['status', '__v'] }
     )
 );
 
