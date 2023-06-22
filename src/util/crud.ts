@@ -6,7 +6,8 @@ import {
     Model,
     ProjectionType,
     QueryOptions,
-    Types
+    Types,
+    isValidObjectId
 } from 'mongoose';
 
 type CheckAuthorizedFunc = (
@@ -39,6 +40,7 @@ export function prefetch(
 ) {
     return async function (req: Request, res: Response, next: NextFunction) {
         const id = req.params.id;
+        if (!isValidObjectId(id)) return res.status(400).end();
 
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
@@ -76,6 +78,7 @@ export function read(
 ) {
     return async function (req: Request, res: Response) {
         const id = req.params.id;
+        if (!isValidObjectId(id)) return res.status(400).end();
 
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
@@ -123,16 +126,13 @@ export function update(
 ) {
     return async function (req: Request, res: Response) {
         const id = req.params.id;
+        if (!isValidObjectId(id)) return res.status(400).end();
 
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
 
-        const authenticatedUser = '';
-
-        const doc = await model.findById(id);
+        const doc = req.doc || (await model.findById(id));
         if (!doc) return res.status(404).end();
-        if (doc.founder.toString() !== authenticatedUser)
-            return res.status(403).end();
 
         await doc.set(req.body).save();
 
@@ -146,15 +146,13 @@ export function del(
 ) {
     return async function (req: Request, res: Response) {
         const id = req.params.id;
-        const authenticatedUser = '';
+        if (!isValidObjectId(id)) return res.status(400).end();
 
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
 
-        const doc = await model.findById(id);
+        const doc = req.doc || (await model.findById(id));
         if (!doc) return res.status(404).end();
-        if (doc.founder.toString() !== authenticatedUser)
-            return res.status(403).end();
 
         await doc.deleteOne();
         res.status(204).end();
