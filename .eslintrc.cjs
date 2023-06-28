@@ -7,5 +7,5 @@ module.exports = {
         'prettier/prettier': ['warn']
     },
     root: true,
-    ignorePatterns: ['js/**/*']
+    ignorePatterns: ['js/**/*', 'static/**/*', '*.env']
 };
