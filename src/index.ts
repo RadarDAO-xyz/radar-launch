@@ -4,19 +4,15 @@ config();
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 import { AddressInfo } from 'net';
-import ProjectsRouter from './paths/projects';
-import UsersRouter from './paths/users';
 import cookieParser from 'cookie-parser';
-import LoginRouter from './paths/login';
+import Routes from './routes';
 
 const app = express();
 
 app.use(json());
 app.use(cookieParser());
 
-app.use('/login', LoginRouter);
-app.use('/projects', ProjectsRouter);
-app.use('/users', UsersRouter);
+app.use(process.env.BASE_URL ?? '/', Routes);
 
 connect(process.env.MONGO_URL).then(() => console.log('MongoDB connected'));
 
