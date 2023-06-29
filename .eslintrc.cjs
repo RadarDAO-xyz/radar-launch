@@ -6,6 +6,14 @@ module.exports = {
     rules: {
         'prettier/prettier': ['warn']
     },
+    env: {
+        browser: true,
+        node: true
+    },
     root: true,
-    ignorePatterns: ['js/**/*', 'static/**/*', '*.env']
+    ignorePatterns: ['js/**/*', '*.env'],
+    globals: {
+        API: 'readonly',
+        $: 'readonly'
+    }
 };
