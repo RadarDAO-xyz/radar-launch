@@ -1,7 +1,3 @@
-const API = 'https://api.radardao.xyz/launch';
-
-$('.heading.submit.left').text('aaaaaaa');
-
 (async function () {
     const ids = [
         // String values
