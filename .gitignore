@@ -1,3 +1,9 @@
+# Generated fodlers
 node_modules
-.env
 js
+
+# Secrets
+.env
+ca_bundle.crt
+certificate.crt
+private.key
