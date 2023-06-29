@@ -121,7 +121,10 @@ export function readMany(
         const projection = params.projection?.(req, res) ?? undefined;
         const opts = params.options?.(req, res) ?? undefined;
 
-        const docs = await model.find(filter, projection, opts);
+        const docs = await model
+            .find(filter, projection, opts)
+            .skip(parseInt(req.query.skip?.toString() ?? '0'))
+            .limit(parseInt(req.query.limit?.toString() ?? '50'));
 
         docs ? res.json(docs.map((doc) => doc.toJSON())) : res.status(404);
         res.end();
