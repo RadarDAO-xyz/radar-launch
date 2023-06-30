@@ -14,6 +14,7 @@ module.exports = {
     ignorePatterns: ['js/**/*', '*.env'],
     globals: {
         API: 'readonly',
-        $: 'readonly'
+        $: 'readonly',
+        tinymce: 'readonly'
     }
 };
