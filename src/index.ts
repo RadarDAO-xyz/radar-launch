@@ -16,7 +16,9 @@ const app = express();
 
 app.use((req, res, next) => {
     console.log(
-        'Received request from',
+        'Received',
+        req.method,
+        'request from',
         req.headers['user-agent'],
         'to',
         req.originalUrl
@@ -24,7 +26,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors());
+app.use(cors({ origin: 'https://www.launch.radardao.xyz', credentials: true }));
 app.use(json());
 app.use(cookieParser());
 
