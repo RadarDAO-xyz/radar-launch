@@ -14,11 +14,11 @@ export interface IProject {
     video_url: string;
     tldr: string;
     brief:
-        | 'Enchantress'
-        | 'Healer'
-        | 'Mediator'
-        | 'Teacher'
-        | 'Artist'
+        | 'The Enchantress'
+        | 'The Healer'
+        | 'The Mediator'
+        | 'The Teacher'
+        | 'The Artist'
         | 'Other';
     inspiration: string;
     team: { name: string; bio?: string; email: string }[];
@@ -59,11 +59,11 @@ const projectSchema = new Schema<IProject>(
             type: String,
             required: true,
             enum: [
-                'Enchantress',
-                'Healer',
-                'Mediator',
-                'Teacher',
-                'Artist',
+                'The Enchantress',
+                'The Healer',
+                'The Mediator',
+                'The Teacher',
+                'The Artist',
                 'Other'
             ]
         },
