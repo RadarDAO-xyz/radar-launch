@@ -40,22 +40,22 @@
             let milestones = [];
             for (let i = 1; i <= 7; i++) {
                 milestones.push({
-                    amount: parseInt($(`#milestone-amount-${i}`).val()),
+                    amount: parseFloat($(`#milestone-amount-${i}`).val()),
                     text: getTextAreaInput(`milestone-text-${i}`)
                 });
             }
             data.milestones = milestones.filter((x) => !!x.amount);
 
-            data.edition_price = parseInt($('#edition_price').val());
+            data.edition_price = parseFloat($('#edition_price').val());
 
-            data.mind_end_date = new Date(
+            data.mint_end_date = new Date(
                 $('#mind_end_date').val().replace(/-/g, '/')
             ).toISOString();
 
             let benefits = [];
             for (let i = 1; i <= 7; i++) {
                 benefits.push({
-                    amount: parseInt($(`#benefit-amount-${i}`).val()),
+                    amount: parseFloat($(`#benefit-amount-${i}`).val()),
                     text: getTextAreaInput(`benefit-text-${i}`)
                 });
             }
@@ -63,7 +63,7 @@
 
             const headers = new Headers();
             headers.set('Content-Type', 'application/json');
-            const res = await fetch(`${API}/projects`, {
+            await fetch(`${API}/projects`, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(data),
@@ -75,7 +75,9 @@
                 })
                 .then((r) => r.json());
 
-            console.log(res);
+            $('#submission-form').hide();
+            $('.w-form-fail').hide();
+            $('.w-form-done').show();
         } catch (e) {
             submitted = false;
             console.error(e);
