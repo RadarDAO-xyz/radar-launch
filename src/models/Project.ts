@@ -29,6 +29,8 @@ export interface IProject {
     mint_end_date: string;
     benefits: { amount: number; text: string }[];
     admin_address: string;
+    supporter_count: number;
+    vote_count: number;
     status: ProjectStatus;
 }
 
@@ -116,6 +118,16 @@ const projectSchema = new Schema<IProject>(
         admin_address: {
             type: String,
             required: true
+        },
+        supporter_count: {
+            type: Number,
+            required: true,
+            default: 0
+        },
+        vote_count: {
+            type: Number,
+            required: true,
+            default: 0
         },
         status: {
             type: Number,
