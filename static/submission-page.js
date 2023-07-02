@@ -1,3 +1,18 @@
+(function () {
+    const replaceUrl = (url) =>
+        $('#video_image').replaceWith(
+            $('<img id="video_image"/>').attr(
+                'src',
+                `https://i3.ytimg.com/vi/${extractYoutubeId(
+                    url
+                )}/maxresdefault.jpg`
+            )
+        );
+
+    $('#video_url').val() && replaceUrl($('#video_url').val());
+    $('#video_url').on('input', (ev) => replaceUrl(ev.target.value));
+})();
+
 (async function () {
     const getTextAreaInput = (id) =>
         tinymce.get(id)?.getContent() || $(`#${id}`).val();
