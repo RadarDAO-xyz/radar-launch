@@ -15,6 +15,7 @@ module.exports = {
     globals: {
         API: 'readonly',
         $: 'readonly',
-        tinymce: 'readonly'
+        tinymce: 'readonly',
+        extractYoutubeId: 'readonly'
     }
 };
