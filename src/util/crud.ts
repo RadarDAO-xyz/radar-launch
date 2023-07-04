@@ -31,6 +31,17 @@ declare global {
                     },
                     never
                 >;
+            result?: Document<
+                unknown,
+                Record<string, never>,
+                Record<string, any>
+            > &
+                Omit<
+                    Record<string, any> & {
+                        _id: Types.ObjectId;
+                    },
+                    never
+                >;
         }
     }
 }
@@ -56,9 +67,10 @@ export function prefetch(
 
 export function create(
     model: Model<any>,
-    checkAuthorized: CheckAuthorizedFunc = () => true
+    checkAuthorized: CheckAuthorizedFunc = () => true,
+    doNext = false
 ) {
-    return async function (req: Request, res: Response) {
+    return async function (req: Request, res: Response, next: NextFunction) {
         const docData = { ...req.body };
 
         if (!(await checkAuthorized(req, res)) && !req.bypass)
@@ -76,7 +88,12 @@ export function create(
         });
         if (!doc) return;
 
-        res.json(doc.toJSON()).end();
+        if (doNext) {
+            req.result = doc.toJSON();
+            next();
+        } else {
+            res.json(doc.toJSON()).end();
+        }
     };
 }
 
