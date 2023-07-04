@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { del, read, readMany, update } from '../util/crud';
+import { del, prefetch, read, readMany, update } from '../util/crud';
 import User from '../models/User';
 import { authenticate } from '../util/auth';
 import Project from '../models/Project';
+import UsersVotesRouter from './users/votes';
 
 const UsersRouter = Router();
 
@@ -34,5 +35,9 @@ UsersRouter.get(
         filter: (req) => ({ founder: req.params.id })
     })
 );
+
+UsersRouter.use('/:id', prefetch(User));
+
+UsersRouter.use('/:id/votes', UsersVotesRouter);
 
 export default UsersRouter;
