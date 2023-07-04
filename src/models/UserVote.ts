@@ -1,11 +1,11 @@
 import { Schema, Types, model } from 'mongoose';
 
-export interface IProjectVote {
+export interface IUserVote {
     user: Types.ObjectId;
     project: Types.ObjectId;
 }
 
-const projectVoteSchema = new Schema<IProjectVote>(
+const userVoteSchema = new Schema<IUserVote>(
     {
         user: {
             type: Schema.Types.ObjectId,
@@ -21,10 +21,6 @@ const projectVoteSchema = new Schema<IProjectVote>(
     { timestamps: true }
 );
 
-const ProjectVote = model<IProjectVote>(
-    'ProjectVote',
-    projectVoteSchema,
-    'projects.votes'
-);
+const UserVote = model<IUserVote>('UserVote', userVoteSchema, 'users.votes');
 
-export default ProjectVote;
+export default UserVote;
