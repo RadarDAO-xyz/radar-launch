@@ -30,7 +30,11 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.method('toJSON', function () {
-    return { name: this.name, profile: this.profile };
+    return {
+        name: this.name,
+        profile: this.profile,
+        wallet_address: this.wallet_address
+    };
 });
 
 const User = model<IUser>('User', userSchema, 'users');
