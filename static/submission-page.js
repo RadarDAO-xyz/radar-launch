@@ -14,6 +14,7 @@
 })();
 
 (async function () {
+    $('#submission-form').on('submit', (e) => e.preventDefault());
     const getTextAreaInput = (id) =>
         tinymce.get(id)?.getContent() || $(`#${id}`).val();
 
