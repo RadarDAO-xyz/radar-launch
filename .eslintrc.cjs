@@ -16,6 +16,10 @@ module.exports = {
         API: 'readonly',
         $: 'readonly',
         tinymce: 'readonly',
-        extractYoutubeId: 'readonly'
+        extractYoutubeId: 'readonly',
+        startTimer: 'readonly',
+        isLoggedIn: 'readonly',
+        fetchSelf: 'readonly',
+        logout: 'readonly'
     }
 };
