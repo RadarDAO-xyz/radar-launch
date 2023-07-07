@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const API = 'https://api.radardao.xyz/launch';
 
+tinymce.on('addeditor', function (event) {
+    var editor = event.editor;
+    var $textarea = $('#' + editor.id);
+    const val = $textarea.val();
+    if (val.length > 0) editor.on('init', () => editor.setContent(val));
+});
+
 function extractYoutubeId(url) {
     let newval = '';
     if ((newval = url.match(/(\?|&)v=([^&#]+)/))) {
@@ -16,6 +23,12 @@ let cached_user = JSON.parse(localStorage.getItem('cached_user') || 'null');
 let cached_user_expiry = JSON.parse(
     localStorage.getItem('cached_user_expiry') || '0'
 );
+const clearUserCache = () => {
+    localStorage.removeItem('cached_user');
+    localStorage.removeItem('cached_user_expiry');
+    cached_user = null;
+    cached_user_expiry = 0;
+};
 
 const isLoggedIn = () => document.cookie.includes('session=');
 async function fetchSelf() {
@@ -27,6 +40,7 @@ async function fetchSelf() {
             else return r;
         })
         .then((r) => r.json());
+    cached_user.profile = `${API}/users/${cached_user._id}/profile`;
     const expiry = new Date();
     expiry.setMinutes(expiry.getMinutes() + 20);
     cached_user_expiry = expiry.getTime();

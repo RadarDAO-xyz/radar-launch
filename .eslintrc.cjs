@@ -20,6 +20,7 @@ module.exports = {
         startTimer: 'readonly',
         isLoggedIn: 'readonly',
         fetchSelf: 'readonly',
-        logout: 'readonly'
+        logout: 'readonly',
+        clearUserCache: 'readonly'
     }
 };
