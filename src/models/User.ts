@@ -37,7 +37,9 @@ userSchema.method('toJSON', function () {
     return {
         name: this.name,
         profile: this.profile,
-        wallet_address: this.wallet_address
+        bio: this.bio,
+        socials: this.socials,
+        wallet_address: this.wallet_addressو
     };
 });
 
