@@ -3,6 +3,8 @@ import { Schema, model } from 'mongoose';
 export interface IUser {
     name: string;
     profile?: string;
+    bio?: string;
+    socials?: string;
     wallet_address: string;
     email?: string;
     session_cookie: string;
@@ -16,6 +18,8 @@ const userSchema = new Schema<IUser>(
             default: 'Your name'
         },
         profile: String,
+        bio: String,
+        socials: String,
         wallet_address: {
             type: String,
             required: true,
