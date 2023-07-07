@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { del, read, readMany, update } from '../util/crud';
+import { del, prefetch, read, readMany, update } from '../util/crud';
 import User from '../models/User';
 import { authenticate } from '../util/auth';
 import Project from '../models/Project';
@@ -13,14 +13,26 @@ UsersRouter.get('/@me', (req, res) => {
     res.end();
 });
 
+UsersRouter.use('/:id', prefetch(User));
 UsersRouter.get('/:id', read(User));
+UsersRouter.get('/:id/profile', (req, res) => {
+    const data = req.doc?.profile as string;
+    const img = Buffer.from(data.replace(/^data:.+\/.+;base64,/, ''), 'base64');
+
+    res.writeHead(200, {
+        'Content-Type': data.split(';')[0].split(':')[1],
+        'Content-Length': img.length
+    });
+    res.write(img);
+    res.end();
+});
 
 UsersRouter.use(authenticate(true));
 
 UsersRouter.patch(
     '/:id',
     update(User, (req) => req.user?._id.toString() === req.params.id, {
-        allowedFields: ['name', 'profile', 'email']
+        allowedFields: ['name', 'profile', 'bio', 'socials', 'email']
     })
 );
 UsersRouter.delete(
