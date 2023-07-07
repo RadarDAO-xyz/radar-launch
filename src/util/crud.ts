@@ -108,7 +108,10 @@ export function read(
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
 
-        const doc = req.doc || (await model.findById(id));
+        const doc =
+            req.doc && req.doc.baseModelName === model.name
+                ? req.doc
+                : await model.findById(id);
 
         doc ? res.json(doc.toJSON()) : res.status(404);
         res.end();
