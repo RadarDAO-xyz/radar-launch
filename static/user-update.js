@@ -40,7 +40,6 @@
 
     const me = await fetchSelf();
     if (!me) return;
-    console.log(me);
     $('#founder-name').text(me.name);
     $('#founder-eth').text(me.wallet_address);
     $('#founder-image').attr('src', me.profile).removeAttr('srcset');
@@ -56,8 +55,6 @@
 
             const selectedFile = document.querySelector('#file').files[0];
 
-            console.log(selectedFile);
-
             const data = {
                 profile: selectedFile
                     ? await toBase64(selectedFile)
@@ -66,8 +63,6 @@
                 socials: $('#socials').val(),
                 bio: getTextAreaInput('bio')
             };
-
-            console.log(data);
 
             const headers = new Headers();
             headers.set('Content-Type', 'application/json');
