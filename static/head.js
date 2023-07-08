@@ -81,7 +81,7 @@ function startTimer(date, { days, hours, minutes, seconds }) {
         days?.text(Math.floor(distance / day));
         hours?.text(Math.floor((distance % day) / hour));
         minutes?.text(Math.floor((distance % hour) / minute));
-        seconds?.text(Math.floor(distance % minute) / second);
+        seconds?.text(Math.floor((distance % minute) / second));
 
         // Check if the countdown is complete
         if (distance <= 0) {
