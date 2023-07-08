@@ -36,10 +36,9 @@ const userSchema = new Schema<IUser>(
 userSchema.method('toJSON', function () {
     return {
         name: this.name,
-        profile: this.profile,
         bio: this.bio,
         socials: this.socials,
-        wallet_address: this.wallet_addressو
+        wallet_address: this.wallet_address
     };
 });
 
