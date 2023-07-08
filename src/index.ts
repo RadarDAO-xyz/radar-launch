@@ -26,7 +26,15 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(cors({ origin: 'https://www.launch.radardao.xyz', credentials: true }));
+app.use(
+    cors({
+        origin: [
+            'https://www.launch.radardao.xyz',
+            'https://launch.radardao.xyz'
+        ],
+        credentials: true
+    })
+);
 app.use(json());
 app.use(cookieParser());
 
