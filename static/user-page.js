@@ -7,7 +7,9 @@
           };
     $('#founder-name').text(user.name);
     $('#founder-bio').html(user.bio);
-    $('#founder-profile').attr('src', user.profile).removeAttr('srcset');
+    $('#founder-profile')
+        .attr('src', `${API}/users/${user._id}/profile`)
+        .removeAttr('srcset');
 
     $('#created-wrapper').children().not(':first').remove();
     const example = $('#created-wrapper').children().first().hide();
