@@ -7,6 +7,7 @@ declare global {
         interface ProcessEnv {
             MONGO_URL: string;
             PORT?: string;
+            HTTPS_PORT?: string;
             BASE_URL?: string;
         }
     }

@@ -42,24 +42,38 @@ app.use(process.env.BASE_URL ?? '/', Routes);
 
 connect(process.env.MONGO_URL).then(() => console.log('MongoDB connected'));
 
-http.createServer((req, res) => {
-    res.writeHead(302, 'Found', {
-        Location: `https://${req.headers.host}${req.url}`
-    }).end();
-}).listen(80);
-
-const server = https
-    .createServer(
-        {
-            cert: readFileSync(path.join(__dirname, '../certificate.crt')),
-            key: readFileSync(path.join(__dirname, '../private.key')),
-            ca: readFileSync(path.join(__dirname, '../ca_bundle.crt'))
-        },
-        app
-    )
-    .listen(443, () => {
+function hostHttp(port: number | string) {
+    const server = app.listen(port, () => {
         console.log(
             'Server listening on port',
             (server.address() as AddressInfo).port
         );
     });
+}
+function hostHttps(sport: number | string, port: number | string) {
+    http.createServer((req, res) => {
+        res.writeHead(302, 'Found', {
+            Location: `https://${req.headers.host}${req.url}`
+        }).end();
+    }).listen(port);
+
+    const server = https
+        .createServer(
+            {
+                cert: readFileSync(path.join(__dirname, '../certificate.crt')),
+                key: readFileSync(path.join(__dirname, '../private.key')),
+                ca: readFileSync(path.join(__dirname, '../ca_bundle.crt'))
+            },
+            app
+        )
+        .listen(sport, () => {
+            console.log(
+                'Server listening on port',
+                (server.address() as AddressInfo).port
+            );
+        });
+}
+
+process.env.HTTPS_PORT
+    ? hostHttps(parseInt(process.env.HTTPS_PORT), process.env.PORT || 80)
+    : hostHttp(process.env.PORT || 80);
