@@ -35,6 +35,7 @@ const userSchema = new Schema<IUser>(
 
 userSchema.method('toJSON', function () {
     return {
+        _id: this._id,
         name: this.name,
         bio: this.bio,
         socials: this.socials,
