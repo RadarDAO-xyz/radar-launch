@@ -24,7 +24,12 @@ LoginRouter.post('/', async (req, res) => {
         await user.save();
     }
 
-    return res.cookie('session', user.session_cookie).json(user).end();
+    return res
+        .cookie('session', user.session_cookie, {
+            maxAge: 2 * 7 * 24 * 60 * 60
+        })
+        .json(user)
+        .end();
 });
 
 export default LoginRouter;
