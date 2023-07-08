@@ -140,7 +140,7 @@ const projectSchema = new Schema<IProject>(
 );
 
 projectSchema.method('toJSON', function () {
-    return { ...this.toObject(), admin_address: undefined, team: undefined };
+    return { ...this.toObject(), admin_address: undefined };
 });
 
 const Project = model<IProject>('Project', projectSchema, 'projects');
