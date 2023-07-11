@@ -21,6 +21,27 @@ ProjectsRouter.post('/', create(Project));
 
 ProjectsRouter.use('/:id', prefetch(Project));
 
+const allowedSwitches = {
+    0: [5],
+    1: [2]
+} as Record<number, number[]>;
+
+// Status modifier
+ProjectsRouter.patch('/:id', async (req, res, next) => {
+    if (!req.body.status) return next();
+
+    if (req.doc?.founder.toString() !== req.user?._id.toString())
+        return res.status(403).end();
+    if (!req.doc) return;
+
+    if (!allowedSwitches[req.doc?.status as number]?.includes(req.body.status))
+        return res.status(400).end();
+
+    req.doc.status = req.body.status;
+    await req.doc.save();
+    return res.json(req.doc).end();
+});
+
 ProjectsRouter.patch(
     '/:id',
     update(

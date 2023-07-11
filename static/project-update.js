@@ -26,9 +26,7 @@
         );
     });
 
-    $('#project-selection').on('change', async (ev) => {
-        const project = projects.find((p) => p._id === $(ev.target).val());
-        if (!project) return;
+    async function updateSelected(project) {
         $('#project-updates-title').text(
             `Previous updates for ${project.title}`
         );
@@ -43,8 +41,8 @@
 
         const existingUpdates =
             project.updates ||
-            (await fetch(`${API}/projects/${$(ev.target).val()}/updates`).then(
-                (r) => r.json()
+            (await fetch(`${API}/projects/${project._id}/updates`).then((r) =>
+                r.json()
             ));
         project.updates = existingUpdates; // Cache system
 
@@ -59,6 +57,18 @@
                 )}</p></div>`
             ).appendTo($('#project-updates-wrapper'))
         );
+    }
+
+    const preselect = new URL(location).searchParams.get('preselect');
+    if (preselect) updateSelected(projects.find((p) => p._id === preselect));
+    $('#project-selection')
+        .children(`[value=${preselect}]`)
+        .attr('selected', '');
+
+    $('#project-selection').on('change', async (ev) => {
+        const project = projects.find((p) => p._id === $(ev.target).val());
+        if (!project) return;
+        updateSelected(project);
     });
 
     let submitted = false;
