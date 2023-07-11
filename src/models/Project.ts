@@ -4,7 +4,9 @@ export enum ProjectStatus {
     'In Review',
     'Approved',
     'Live',
-    'Closed & Building'
+    'Closed & Building',
+    'Rejected',
+    'Cancelled'
 }
 
 export interface IProject {
@@ -132,7 +134,7 @@ const projectSchema = new Schema<IProject>(
         status: {
             type: Number,
             required: true,
-            emum: [0, 1, 2, 3],
+            emum: [0, 1, 2, 3, 4, 5],
             default: 0
         }
     },
