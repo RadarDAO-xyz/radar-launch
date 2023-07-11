@@ -4,7 +4,7 @@ export enum ProjectStatus {
     'In Review',
     'Approved',
     'Live',
-    'Closed & Building',
+    'Building',
     'Rejected',
     'Cancelled'
 }
