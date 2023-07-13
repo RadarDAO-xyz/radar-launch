@@ -42,8 +42,7 @@
     if (!me) return;
     $('#founder-name').text(me.name);
     $('#founder-eth').text(me.wallet_address);
-    if (me.profile)
-        $('#founder-image').attr('src', me.profile).removeAttr('srcset');
+    $('#founder-image').attr('src', me.profile).removeAttr('srcset');
     $('#username').val(me.name);
     $('#socials').val(me.socials);
     setTextAreaInput('bio', me.bio);

@@ -3,8 +3,7 @@
 
     $('#founder-name').text(me.name);
     $('#founder-eth').text(me.wallet_address);
-    if (me.profile)
-        $('#founder-profile').attr('src', me.profile).removeAttr('srcset');
+    $('#founder-profile').attr('src', me.profile).removeAttr('srcset');
 
     async function loadProjects() {
         const projects = await fetch(`${API}/users/${me._id}/projects`).then(
