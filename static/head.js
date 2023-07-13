@@ -55,7 +55,7 @@ async function fetchSelf() {
 function logout() {
     localStorage.removeItem('cached_user');
     localStorage.removeItem('cached_user_expiry');
-    document.cookie = '';
+    return fetch(`${API}/logout`);
 }
 
 function startTimer(date, { days, hours, minutes, seconds }) {

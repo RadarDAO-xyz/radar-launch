@@ -1,6 +1,7 @@
 import { Router, urlencoded } from 'express';
 import User from '../models/User';
 import { randomBytes } from 'crypto';
+import { SessionCookieName, SessionCookieOptions } from '../constants';
 
 const randomHash = () => randomBytes(20).toString('hex');
 
@@ -25,11 +26,7 @@ LoginRouter.post('/', async (req, res) => {
     }
 
     return res
-        .cookie('session', user.session_cookie, {
-            maxAge: 2 * 7 * 24 * 60 * 60,
-            sameSite: 'none',
-            secure: true
-        })
+        .cookie(SessionCookieName, user.session_cookie, SessionCookieOptions)
         .json(user)
         .end();
 });
