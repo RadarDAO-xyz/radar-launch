@@ -10,6 +10,10 @@ const ProjectsRouter = Router();
 ProjectsRouter.get('/', readMany(Project));
 ProjectsRouter.get('/:id', read(Project));
 
+ProjectsRouter.use('/:id', prefetch(Project));
+
+ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
+
 ProjectsRouter.use(authenticate(true));
 
 ProjectsRouter.post('/', async (req, res, next) => {
@@ -18,8 +22,6 @@ ProjectsRouter.post('/', async (req, res, next) => {
     next();
 });
 ProjectsRouter.post('/', create(Project));
-
-ProjectsRouter.use('/:id', prefetch(Project));
 
 const allowedSwitches = {
     0: [5],
@@ -58,7 +60,5 @@ ProjectsRouter.delete(
         (req) => req.doc?.founder.toString() === req.user?._id.toString()
     )
 );
-
-ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
 
 export default ProjectsRouter;

@@ -17,6 +17,7 @@ UsersRouter.use('/:id', prefetch(User));
 UsersRouter.get('/:id', read(User));
 UsersRouter.get('/:id/profile', (req, res) => {
     const data = req.doc?.profile as string;
+    if (!data) return res.status(404).end();
     const img = Buffer.from(data.replace(/^data:.+\/.+;base64,/, ''), 'base64');
 
     res.writeHead(200, {
@@ -26,6 +27,13 @@ UsersRouter.get('/:id/profile', (req, res) => {
     res.write(img);
     res.end();
 });
+
+UsersRouter.get(
+    '/:id/projects',
+    readMany(Project, () => true, {
+        filter: (req) => ({ founder: req.params.id })
+    })
+);
 
 UsersRouter.use(authenticate(true));
 
@@ -38,13 +46,6 @@ UsersRouter.patch(
 UsersRouter.delete(
     '/:id',
     del(User, (req) => req.user?._id.toString() === req.params.id)
-);
-
-UsersRouter.get(
-    '/:id/projects',
-    readMany(Project, () => true, {
-        filter: (req) => ({ founder: req.params.id })
-    })
 );
 
 export default UsersRouter;

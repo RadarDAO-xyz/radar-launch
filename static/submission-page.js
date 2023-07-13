@@ -38,8 +38,6 @@
             if (submitted) return;
             submitted = true;
 
-            console.log('submitting');
-
             ids.forEach((id) => (data[id] = getTextAreaInput(id)));
 
             let team = [];

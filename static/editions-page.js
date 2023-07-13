@@ -1,8 +1,6 @@
 (async function () {
     const me = await fetchSelf();
 
-    console.log(me);
-
     $('#founder-name').text(me.name);
     $('#founder-eth').text(me.wallet_address);
     $('#founder-profile').attr('src', me.profile).removeAttr('srcset');
@@ -11,8 +9,6 @@
         const projects = await fetch(`${API}/users/${me._id}/projects`).then(
             (r) => r.json()
         );
-
-        console.log(projects);
 
         $('#active-visions-wrapper')
             .add('#inactive-visions-wrapper')

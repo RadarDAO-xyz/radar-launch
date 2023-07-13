@@ -34,7 +34,7 @@ const isLoggedIn = () => document.cookie.includes('session=');
 async function fetchSelf() {
     if (!isLoggedIn()) return null;
     if (cached_user && cached_user_expiry > Date.now()) return cached_user;
-    cached_user = await fetch(`${API}/users/@me`)
+    cached_user = await fetch(`${API}/users/@me`, { credentials: 'include' })
         .then((r) => {
             if (!r.ok) throw r.statusText;
             else return r;

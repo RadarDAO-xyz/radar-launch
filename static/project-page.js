@@ -58,8 +58,6 @@
             curr.find('.milestones').html(m.text);
         });
 
-        console.log(project);
-
         $('#benefits-wrapper')
             .children('.benefits-div')
             .slice(project.benefits.length)

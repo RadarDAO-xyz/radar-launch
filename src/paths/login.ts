@@ -26,7 +26,9 @@ LoginRouter.post('/', async (req, res) => {
 
     return res
         .cookie('session', user.session_cookie, {
-            maxAge: 2 * 7 * 24 * 60 * 60
+            maxAge: 2 * 7 * 24 * 60 * 60,
+            sameSite: 'none',
+            secure: true
         })
         .json(user)
         .end();
