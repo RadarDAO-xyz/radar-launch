@@ -10,6 +10,9 @@
     $('#founder-profile')
         .attr('src', `${API}/users/${user._id}/profile`)
         .removeAttr('srcset');
+})();
+(async function () {
+    const id = new URL(location).searchParams.get('id');
 
     $('#created-wrapper').children().not(':first').remove();
     const example = $('#created-wrapper').children().first().hide();

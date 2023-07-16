@@ -1,9 +1,4 @@
 (async function () {
-    const formatDate = (date) =>
-        `${(date.getMonth() + 1).toString().padStart(2, '0')}.${date
-            .getDate()
-            .toString()
-            .padStart(2, '0')}.${date.getFullYear().toString().substring(2)}`;
     try {
         const id = new URL(location.href).searchParams.get('id');
         const project = id
@@ -11,6 +6,31 @@
             : undefined;
 
         if (!project) throw project;
+        formatProjectToPage(project);
+
+        const founder = await fetch(`${API}/users/${project.founder}`).then(
+            (r) => r.json()
+        );
+        if (!founder) throw founder;
+        formatFounderToPage(founder);
+
+        clearProjectUpdates();
+        const projectUpdates = await fetch(
+            `${API}/projects/${id}/updates`
+        ).then((r) => r.json());
+        formatProjectUpdatesToPage(projectUpdates || []);
+    } catch (e) {
+        console.error(e);
+        $('#project-title').text('Invalid Project ID/Project not found');
+    }
+
+    const formatDate = (date) =>
+        `${(date.getMonth() + 1).toString().padStart(2, '0')}.${date
+            .getDate()
+            .toString()
+            .padStart(2, '0')}.${date.getFullYear().toString().substring(2)}`;
+
+    function formatProjectToPage(project) {
         $('#project-title').text(project.title);
         $('#project-byline').text(project.description);
         $('#project-brief').text(project.brief);
@@ -68,25 +88,20 @@
             curr.find('.body-text-5').text(b.amount);
             curr.find('.benefits-list-text').html(b.text);
         });
-
-        const founder = await fetch(`${API}/users/${project.founder}`).then(
-            (r) => r.json()
-        );
-
-        if (!founder) throw founder;
+    }
+    function formatFounderToPage(founder) {
         $('#founder-name')
             .text(founder.name)
             .attr('href', `/founder-profile?id=${founder._id}`);
         $('#founder-eth').text(founder.wallet_address);
         $('#founder-image')
-            .attr('src', `${API}/users/${project.founder}/profile`)
+            .attr('src', `${API}/users/${founder._id}/profile`)
             .removeAttr('srcset');
-
+    }
+    function clearProjectUpdates() {
         $('#project-updates-wrapper').children().remove();
-        const projectUpdates = await fetch(
-            `${API}/projects/${id}/updates`
-        ).then((r) => r.json());
-
+    }
+    function formatProjectUpdatesToPage(projectUpdates) {
         projectUpdates.forEach((u) => {
             $(
                 `<div class="update-div-2"><p class="project-updates-text">${
@@ -96,8 +111,5 @@
                 )}</p></div>`
             ).appendTo($('#project-updates-wrapper'));
         });
-    } catch (e) {
-        console.error(e);
-        $('#project-title').text('Invalid Project ID/Project not found');
     }
 })();
