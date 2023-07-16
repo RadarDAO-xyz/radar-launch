@@ -1,4 +1,5 @@
 (async function () {
+    const updatePage = `/founder-edit-project-page-copy`;
     const me = await fetchSelf();
 
     $('#founder-name').text(me.name);
@@ -142,17 +143,11 @@
             curr.find('.live-buttons-stack')
                 .children()
                 .last()
-                .attr(
-                    'href',
-                    `https://www.launch.radardao.xyz/founder-edit-project-page-copy?preselect=${project._id}`
-                );
+                .attr('href', `${updatePage}?preselect=${project._id}`);
             curr.find('.building-button-stack')
                 .children()
                 .last()
-                .attr(
-                    'href',
-                    `https://www.launch.radardao.xyz/founder-edit-project-page-copy?preselect=${project._id}`
-                );
+                .attr('href', `${updatePage}?preselect=${project._id}`);
 
             if (project.status >= 4)
                 curr.appendTo($('#inactive-visions-wrapper'));
