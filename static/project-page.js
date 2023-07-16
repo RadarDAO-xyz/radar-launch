@@ -24,11 +24,12 @@
         $('#project-title').text('Invalid Project ID/Project not found');
     }
 
-    const formatDate = (date) =>
-        `${(date.getMonth() + 1).toString().padStart(2, '0')}.${date
+    function formatDate(date) {
+        return `${(date.getMonth() + 1).toString().padStart(2, '0')}.${date
             .getDate()
             .toString()
             .padStart(2, '0')}.${date.getFullYear().toString().substring(2)}`;
+    }
 
     function formatProjectToPage(project) {
         $('#project-title').text(project.title);
