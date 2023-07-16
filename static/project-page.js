@@ -1,6 +1,8 @@
 (async function () {
     try {
         const id = new URL(location.href).searchParams.get('id');
+
+        $('html').hide();
         const project = id
             ? await fetch(`${API}/projects/${id}`).then((r) => r.json())
             : undefined;
@@ -13,6 +15,7 @@
         );
         if (!founder) throw founder;
         formatFounderToPage(founder);
+        $('html').show();
 
         clearProjectUpdates();
         const projectUpdates = await fetch(
@@ -20,6 +23,7 @@
         ).then((r) => r.json());
         formatProjectUpdatesToPage(projectUpdates || []);
     } catch (e) {
+        $('html').show();
         console.error(e);
         $('#project-title').text('Invalid Project ID/Project not found');
     }

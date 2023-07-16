@@ -38,6 +38,7 @@
             reader.onerror = reject;
         });
 
+    $('html').hide();
     const me = await fetchSelf();
     if (!me) return;
     $('#founder-name').text(me.name);
@@ -46,6 +47,7 @@
     $('#username').val(me.name);
     $('#socials').val(me.socials);
     setTextAreaInput('bio', me.bio);
+    $('html').show();
 
     let submitted = false;
     $('#submit').on('click', async () => {

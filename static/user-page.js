@@ -1,4 +1,5 @@
 (async function () {
+    $('html').hide();
     const id = new URL(location).searchParams.get('id');
     const user = id
         ? await fetch(`${API}/users/${id}`).then((r) => r.json())
@@ -10,6 +11,7 @@
     $('#founder-profile')
         .attr('src', `${API}/users/${user._id}/profile`)
         .removeAttr('srcset');
+    $('html').show();
 })();
 (async function () {
     const id = new URL(location).searchParams.get('id');
