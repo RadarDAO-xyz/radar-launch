@@ -1,13 +1,15 @@
 import {
+    AuthKitBasePack,
+    Web3AuthEventListener,
+    Web3AuthModalPack,
     SafeAuthKit,
-    SafeAuthSignInData,
-    Web3AuthAdapter,
-    Web3AuthEventListener
+    AuthKitSignInData
 } from '@safe-global/auth-kit';
 import {
     ADAPTER_EVENTS,
     CHAIN_NAMESPACES,
     SafeEventEmitterProvider,
+    UserInfo,
     WALLET_ADAPTERS
 } from '@web3auth/base';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
@@ -20,21 +22,25 @@ const disconnectedHandler: Web3AuthEventListener = (data) =>
     console.log('DISCONNECTED', data);
 
 function Wallet() {
+    const [web3AuthModalPack, setWeb3AuthModalPack] =
+        useState<Web3AuthModalPack>();
     const [safeAuthSignInResponse, setSafeAuthSignInResponse] =
-        useState<SafeAuthSignInData | null>(null);
-    const [safeAuth, setSafeAuth] = useState<SafeAuthKit<Web3AuthAdapter>>();
+        useState<AuthKitSignInData | null>(null);
+    const [userInfo, setUserInfo] = useState<Partial<UserInfo>>();
     const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
         null
     );
     useEffect(() => {
-        (async () => {
-            const options = {
-                clientId: process.env.VITE_WEB3AUTH_CLIENT_ID || '',
+        void (async () => {
+            const options: Web3AuthOptions = {
+                clientId: import.meta.env.VITE_WEB3AUTH_CLIENT_ID || '',
                 web3AuthNetwork: 'testnet',
                 chainConfig: {
                     chainNamespace: CHAIN_NAMESPACES.EIP155,
                     chainId: '0x1',
-                    rpcTarget: `https://mainnet.infura.io/v3/${process.env.VITE_INFURA_KEY}`
+                    rpcTarget: `https://mainnet.infura.io/v3/${
+                        import.meta.env.VITE_INFURA_KEY
+                    }`
                 },
                 uiConfig: {
                     theme: 'dark',
@@ -66,31 +72,34 @@ function Wallet() {
                 }
             });
 
-            const adapter = new Web3AuthAdapter(
-                options,
-                [openloginAdapter],
-                modalConfig
-            );
-
-            const safeAuthKit = await SafeAuthKit.init(adapter, {
+            const web3AuthModalPack = new Web3AuthModalPack({
                 txServiceUrl: 'https://safe-transaction-goerli.safe.global'
             });
 
-            safeAuthKit.subscribe(ADAPTER_EVENTS.CONNECTED, connectedHandler);
+            await web3AuthModalPack.init({
+                options,
+                adapters: [openloginAdapter],
+                modalConfig
+            });
 
-            safeAuthKit.subscribe(
+            web3AuthModalPack.subscribe(
+                ADAPTER_EVENTS.CONNECTED,
+                connectedHandler
+            );
+
+            web3AuthModalPack.subscribe(
                 ADAPTER_EVENTS.DISCONNECTED,
                 disconnectedHandler
             );
 
-            setSafeAuth(safeAuthKit);
+            setWeb3AuthModalPack(web3AuthModalPack);
 
             return () => {
-                safeAuthKit.unsubscribe(
+                web3AuthModalPack.unsubscribe(
                     ADAPTER_EVENTS.CONNECTED,
                     connectedHandler
                 );
-                safeAuthKit.unsubscribe(
+                web3AuthModalPack.unsubscribe(
                     ADAPTER_EVENTS.DISCONNECTED,
                     disconnectedHandler
                 );
@@ -98,20 +107,34 @@ function Wallet() {
         })();
     }, []);
 
+    useEffect(() => {
+        if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
+            void (async () => {
+                await onLogin();
+            })();
+        }
+    }, [web3AuthModalPack]);
+
     const onLogin = async () => {
-        if (!safeAuth) return;
+        if (!web3AuthModalPack) return;
 
-        const response = await safeAuth.signIn();
-        console.log('SIGN IN RESPONSE: ', response);
+        const signInInfo = await web3AuthModalPack.signIn();
+        console.log('SIGN IN RESPONSE: ', signInInfo);
 
-        setSafeAuthSignInResponse(response);
-        setProvider(safeAuth.getProvider());
+        const userInfo = await web3AuthModalPack.getUserInfo();
+        console.log('USER INFO: ', userInfo);
+
+        setSafeAuthSignInResponse(signInInfo);
+        setUserInfo(userInfo || undefined);
+        setProvider(
+            web3AuthModalPack.getProvider() as SafeEventEmitterProvider
+        );
     };
 
     const onLogout = async () => {
-        if (!safeAuth) return;
+        if (!web3AuthModalPack) return;
 
-        await safeAuth.signOut();
+        await web3AuthModalPack.signOut();
 
         setProvider(null);
         setSafeAuthSignInResponse(null);
