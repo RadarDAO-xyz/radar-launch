@@ -1,9 +1,7 @@
 import {
-    AuthKitBasePack,
+    AuthKitSignInData,
     Web3AuthEventListener,
-    Web3AuthModalPack,
-    SafeAuthKit,
-    AuthKitSignInData
+    Web3AuthModalPack
 } from '@safe-global/auth-kit';
 import {
     ADAPTER_EVENTS,
@@ -12,16 +10,16 @@ import {
     UserInfo,
     WALLET_ADAPTERS
 } from '@web3auth/base';
+import { Web3AuthOptions } from '@web3auth/modal';
 import { OpenloginAdapter } from '@web3auth/openlogin-adapter';
 import { useEffect, useState } from 'react';
-import { Web3AuthOptions } from '@web3auth/modal';
 
 const connectedHandler: Web3AuthEventListener = (data) =>
     console.log('CONNECTED', data);
 const disconnectedHandler: Web3AuthEventListener = (data) =>
     console.log('DISCONNECTED', data);
 
-function Wallet() {
+function Home() {
     const [web3AuthModalPack, setWeb3AuthModalPack] =
         useState<Web3AuthModalPack>();
     const [safeAuthSignInResponse, setSafeAuthSignInResponse] =
@@ -30,17 +28,18 @@ function Wallet() {
     const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(
         null
     );
+
+    console.log({ safeAuthSignInResponse, userInfo });
+
     useEffect(() => {
         void (async () => {
             const options: Web3AuthOptions = {
-                clientId: import.meta.env.VITE_WEB3AUTH_CLIENT_ID || '',
+                clientId: process.env.VITE_WEB3AUTH_CLIENT_ID || '',
                 web3AuthNetwork: 'testnet',
                 chainConfig: {
                     chainNamespace: CHAIN_NAMESPACES.EIP155,
                     chainId: '0x1',
-                    rpcTarget: `https://mainnet.infura.io/v3/${
-                        import.meta.env.VITE_INFURA_KEY
-                    }`
+                    rpcTarget: `https://mainnet.infura.io/v3/${process.env.VITE_IPNFURA_KEY}`
                 },
                 uiConfig: {
                     theme: 'dark',
@@ -78,6 +77,8 @@ function Wallet() {
 
             await web3AuthModalPack.init({
                 options,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 adapters: [openloginAdapter],
                 modalConfig
             });
@@ -109,9 +110,7 @@ function Wallet() {
 
     useEffect(() => {
         if (web3AuthModalPack && web3AuthModalPack.getProvider()) {
-            void (async () => {
-                await onLogin();
-            })();
+            void onLogin();
         }
     }, [web3AuthModalPack]);
 
@@ -141,10 +140,28 @@ function Wallet() {
     };
 
     if (provider) {
-        return <button onClick={onLogout}>Log Out</button>;
+        return (
+            <button
+                id="walletButton"
+                onClick={() => {
+                    void onLogout();
+                }}
+            >
+                Log Out
+            </button>
+        );
     }
 
-    return <button onClick={onLogin}>Login</button>;
+    return (
+        <button
+            id="walletButton"
+            onClick={() => {
+                void onLogin();
+            }}
+        >
+            Login
+        </button>
+    );
 }
 
-export default Wallet;
+export default Home;
