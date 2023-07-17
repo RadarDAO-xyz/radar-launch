@@ -1,4 +1,8 @@
-# Generated fodlers
+# Editor configs
+.vscode/*
+!.vscode/extensions.json
+
+# Generated folders
 node_modules
 js
 
