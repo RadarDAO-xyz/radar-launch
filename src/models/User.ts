@@ -37,6 +37,7 @@ userSchema.method('toJSON', function () {
     return {
         _id: this._id,
         name: this.name,
+        profile: this.profile,
         bio: this.bio,
         socials: this.socials,
         wallet_address: this.wallet_address

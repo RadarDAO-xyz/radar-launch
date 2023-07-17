@@ -30,14 +30,6 @@
     const setTextAreaInput = (id, content) =>
         tinymce.get(id)?.setContent(content) || $(`#${id}`).val(content);
 
-    const toBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-        });
-
     $('html').hide();
     const me = await fetchSelf();
     if (!me) return;
@@ -54,25 +46,26 @@
         try {
             if (submitted) return;
             submitted = true;
+            $('#submit').val('Submitting...');
 
             const selectedFile = document.querySelector('#file').files[0];
 
-            const data = {
-                profile: selectedFile
-                    ? await toBase64(selectedFile)
-                    : undefined,
-                name: $('#username').val(),
-                socials: $('#socials').val(),
-                bio: getTextAreaInput('bio')
-            };
+            if (selectedFile?.size >= 10 * 1024 * 1024) {
+                $('#submit').val('Profile image too big! Max 10mb');
+                submitted = false;
+                return;
+            }
 
-            const headers = new Headers();
-            headers.set('Content-Type', 'application/json');
+            const formData = new FormData();
+            formData.append('name', $('#username').val());
+            formData.append('socials', $('#socials').val());
+            formData.append('bio', getTextAreaInput('bio'));
+            selectedFile && formData.append('profile', selectedFile);
+
             await fetch(`${API}/users/${me._id}`, {
                 method: 'PATCH',
-                headers,
                 credentials: 'include',
-                body: JSON.stringify(data)
+                body: formData
             })
                 .then((r) => {
                     if (!r.ok) throw r.statusText;
@@ -84,6 +77,13 @@
             $('.w-form-done').show();
             clearUserCache();
         } catch (e) {
+            $('#submit').val('Update your bio');
+            $('#update-user-form').hide();
+            $('.w-form-fail').show();
+            setTimeout(() => {
+                $('#update-user-form').show();
+                $('.w-form-fail').hide();
+            }, 2500);
             submitted = false;
             console.error(e);
         }

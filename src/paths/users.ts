@@ -3,6 +3,9 @@ import { del, prefetch, read, readMany, update } from '../util/crud';
 import User from '../models/User';
 import { authenticate } from '../util/auth';
 import Project from '../models/Project';
+import formidable from 'formidable';
+import { createReadStream } from 'fs';
+import { ImgurClient } from 'imgur';
 
 const UsersRouter = Router();
 
@@ -15,18 +18,7 @@ UsersRouter.get('/@me', (req, res) => {
 
 UsersRouter.use('/:id', prefetch(User));
 UsersRouter.get('/:id', read(User));
-UsersRouter.get('/:id/profile', (req, res) => {
-    const data = req.doc?.profile as string;
-    if (!data) return res.status(404).end();
-    const img = Buffer.from(data.replace(/^data:.+\/.+;base64,/, ''), 'base64');
-
-    res.writeHead(200, {
-        'Content-Type': data.split(';')[0].split(':')[1],
-        'Content-Length': img.length
-    });
-    res.write(img);
-    res.end();
-});
+UsersRouter.get('/:id/profile', (req, res) => res.redirect(req.doc?.profile));
 
 UsersRouter.get(
     '/:id/projects',
@@ -37,6 +29,41 @@ UsersRouter.get(
 
 UsersRouter.use(authenticate(true));
 
+UsersRouter.patch('/:id', (req, res, next) => {
+    if (req.headers['content-type']?.startsWith('multipart/form-data')) {
+        const form = formidable({
+            maxFileSize: 10 * 1024 * 1024
+        });
+
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                next(err);
+                return;
+            }
+            req.body = {
+                name: fields.name?.[0],
+                bio: fields.bio?.[0],
+                socials: fields.socials?.[0],
+                email: fields.email?.[0]
+            };
+            console.log(files.profile);
+            if (Array.isArray(files.profile)) {
+                const client = new ImgurClient({
+                    clientId: process.env.IMGUR_CLIENT_ID
+                });
+                const resp = await client.upload({
+                    image: createReadStream(
+                        files.profile[0]?.filepath
+                    ) as unknown as ReadableStream,
+                    type: 'stream'
+                });
+                console.log(resp.data.link);
+                req.body.profile = resp.data.link;
+            }
+            next();
+        });
+    } else next();
+});
 UsersRouter.patch(
     '/:id',
     update(User, (req) => req.user?._id.toString() === req.params.id, {
