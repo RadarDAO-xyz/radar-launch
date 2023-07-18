@@ -1,16 +1,18 @@
 {
   "name": "radar-launch",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Handles backend measures for the Radar Launch",
+  "main": "js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "ts-node src/index.ts",
+    "prestart": "npm run build",
+    "start": "pm2 start ecosystem.config.js --env production",
+    "dev": "PORT=80 HTTPS_PORT=443 BASE_URL=/launch NODE_ENV=development ts-node src/index.ts",
     "build": "tsc",
     "prepare": "husky install"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "mrTomatolegit",
+  "license": "MIT",
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",

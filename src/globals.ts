@@ -5,11 +5,12 @@ export {};
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            MONGO_URL: string;
-            IMGUR_CLIENT_ID: string;
+            NODE_ENV: 'development' | 'production';
             PORT?: string;
             HTTPS_PORT?: string;
             BASE_URL?: string;
+            MONGO_URL: string;
+            IMGUR_CLIENT_ID: string;
         }
     }
 }
