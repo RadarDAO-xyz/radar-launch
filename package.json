@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prestart": "npm run build",
-    "start": "pm2 start ecosystem.config.js --env production",
-    "dev": "PORT=80 HTTPS_PORT=443 BASE_URL=/launch NODE_ENV=development ts-node src/index.ts",
+    "start": "pm2 stop ecosystem.config.js & pm2 start ecosystem.config.js --env production",
+    "dev": "BASE_URL=/launch NODE_ENV=development ts-node src/index.ts",
     "build": "tsc",
     "prepare": "husky install"
   },

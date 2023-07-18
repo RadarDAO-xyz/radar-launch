@@ -76,4 +76,4 @@ function hostHttps(sport: number | string, port: number | string) {
 
 process.env.HTTPS_PORT
     ? hostHttps(parseInt(process.env.HTTPS_PORT), process.env.PORT || 80)
-    : hostHttp(process.env.PORT || 80);
+    : hostHttp(process.env.PORT || 3000);
