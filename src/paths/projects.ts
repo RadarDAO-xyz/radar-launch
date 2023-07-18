@@ -4,6 +4,7 @@ import { authenticate } from '../util/auth';
 import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import { Types } from 'mongoose';
 import ProjectsUpdatesRouter from './projects/updates';
+import ProjectsVotesRouter from './projects/votes';
 
 const ProjectsRouter = Router();
 
@@ -60,5 +61,9 @@ ProjectsRouter.delete(
         (req) => req.doc?.founder.toString() === req.user?._id.toString()
     )
 );
+
+ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
+
+ProjectsRouter.use('/:projectId/votes', ProjectsVotesRouter);
 
 export default ProjectsRouter;

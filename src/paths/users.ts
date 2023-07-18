@@ -6,6 +6,7 @@ import Project from '../models/Project';
 import formidable from 'formidable';
 import { createReadStream } from 'fs';
 import { ImgurClient } from 'imgur';
+import UsersVotesRouter from './users/votes';
 
 const UsersRouter = Router();
 
@@ -74,5 +75,7 @@ UsersRouter.delete(
     '/:id',
     del(User, (req) => req.user?._id.toString() === req.params.id)
 );
+
+UsersRouter.use('/:id/votes', UsersVotesRouter);
 
 export default UsersRouter;
