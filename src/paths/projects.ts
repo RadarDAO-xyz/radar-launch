@@ -8,7 +8,12 @@ import ProjectsVotesRouter from './projects/votes';
 
 const ProjectsRouter = Router();
 
-ProjectsRouter.get('/', readMany(Project));
+ProjectsRouter.get(
+    '/',
+    readMany(Project, () => true, {
+        filter: (req) => (req.params.all ? {} : { status: { $in: [2, 3] } })
+    })
+);
 ProjectsRouter.get('/:id', read(Project));
 
 ProjectsRouter.use('/:id', prefetch(Project));

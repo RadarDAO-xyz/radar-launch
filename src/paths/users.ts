@@ -24,7 +24,10 @@ UsersRouter.get('/:id/profile', (req, res) => res.redirect(req.doc?.profile));
 UsersRouter.get(
     '/:id/projects',
     readMany(Project, () => true, {
-        filter: (req) => ({ founder: req.params.id })
+        filter: (req) =>
+            req.params.all
+                ? { founder: req.params.id }
+                : { founder: req.params.id, status: { $in: [2, 3] } }
     })
 );
 
