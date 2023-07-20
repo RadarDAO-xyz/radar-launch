@@ -66,7 +66,10 @@ UsersRouter.patch('/:id', (req, res, next) => {
             }
             next();
         });
-    } else next();
+    } else {
+        delete req.body.profile;
+        next();
+    }
 });
 UsersRouter.patch(
     '/:id',
