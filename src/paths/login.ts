@@ -25,13 +25,14 @@ LoginRouter.post('/', async (req, res) => {
         await user.save();
     }
 
-    return res
-        .cookie(SessionCookieName, user.session_cookie, SessionCookieOptions)
-        .redirect(
+    res.cookie(SessionCookieName, user.session_cookie, SessionCookieOptions);
+    if (req.query.redirect_uri)
+        res.redirect(
             `https://launch.radardao.xyz${
                 req.query.redirect_uri?.toString() || ''
             }`
         );
+    else res.end();
 });
 
 export default LoginRouter;
