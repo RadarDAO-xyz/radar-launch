@@ -109,7 +109,9 @@ export function read(
             return res.status(403).end();
 
         const doc =
-            req.doc && req.doc.baseModelName === model.name
+            req.doc &&
+            req.doc.baseModelName === model.name &&
+            req.doc._id?.toString() === id
                 ? req.doc
                 : await model.findById(id);
 
