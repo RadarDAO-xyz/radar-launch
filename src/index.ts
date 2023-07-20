@@ -13,6 +13,7 @@ import path from 'path';
 import cors from 'cors';
 
 const app = express();
+app.disable('x-powered-by'); // Disable X-Powered-By: Express header
 
 app.use((req, res, next) => {
     console.log(
