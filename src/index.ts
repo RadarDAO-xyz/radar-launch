@@ -1,4 +1,5 @@
 import './globals';
+import './util/logger';
 import { config } from 'dotenv';
 config();
 import express, { json } from 'express';
@@ -15,6 +16,7 @@ import cors from 'cors';
 const app = express();
 app.disable('x-powered-by'); // Disable X-Powered-By: Express header
 
+// Log request user agents
 app.use((req, res, next) => {
     console.log(
         'Received',
@@ -27,6 +29,7 @@ app.use((req, res, next) => {
     next();
 });
 
+// Respond with appropriate CORS Headers
 app.use(
     cors({
         origin: [
@@ -36,16 +39,18 @@ app.use(
         credentials: true
     })
 );
-app.use(json());
-app.use(cookieParser());
+app.use(json()); // Parse JSON Body
+app.use(cookieParser()); // Parse cookies
 
+// Apply the Base URL if it was provided
 app.use(process.env.BASE_URL ?? '/', Routes);
 
-connect(process.env.MONGO_URL).then(() => console.log('MongoDB connected'));
+// Connect to MongoDB
+connect(process.env.MONGO_URL).then(() => console.info('MongoDB connected'));
 
 function hostHttp(port: number | string) {
     const server = app.listen(port, () => {
-        console.log(
+        console.info(
             'Server listening on port',
             (server.address() as AddressInfo).port
         );
@@ -68,13 +73,14 @@ function hostHttps(sport: number | string, port: number | string) {
             app
         )
         .listen(sport, () => {
-            console.log(
+            console.info(
                 'Server listening on port',
                 (server.address() as AddressInfo).port
             );
         });
 }
 
+// Host on HTTPS Only if https port is provided
 process.env.HTTPS_PORT
     ? hostHttps(parseInt(process.env.HTTPS_PORT), process.env.PORT || 80)
     : hostHttp(process.env.PORT || 3000);
