@@ -10,6 +10,8 @@ const ProjectsRouter = Router();
 
 // Path: /projects
 
+// Fetches projects
+// Query Param: `all` - Fetches projects without filtering through unapproved ones
 ProjectsRouter.get(
     '/',
     readMany(Project, () => true, {
@@ -21,6 +23,8 @@ ProjectsRouter.get('/:id', read(Project));
 ProjectsRouter.use('/:id', prefetch(Project));
 
 ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
+
+ProjectsRouter.use('/:projectId/votes', ProjectsVotesRouter);
 
 ProjectsRouter.use(authenticate(true));
 
@@ -68,9 +72,5 @@ ProjectsRouter.delete(
         (req) => req.doc?.founder.toString() === req.user?._id.toString()
     )
 );
-
-ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
-
-ProjectsRouter.use('/:projectId/votes', ProjectsVotesRouter);
 
 export default ProjectsRouter;

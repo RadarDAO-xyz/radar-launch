@@ -2,6 +2,8 @@ module.exports = {
     name: 'Launch API',
     script: './js/index.js',
     env: {
+        // These ENV variables are unused, as pm2 isn't used for development
+        // These are present of a better understanding of the functionality
         PORT: 80,
         HTTPS_PORT: 443,
         NODE_ENV: 'development',

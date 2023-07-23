@@ -20,3 +20,9 @@ yarn dev
 ```
 
 This will host it on `::3000`.
+
+## Production host
+
+The [production host](https://api.radardao.xyz/launch) is proxied using nginx, which is why the server is listening at odd ports, like 82 and 445 (see [ecosystem.config.js](/ecosystem.config.js)). Nginx redirects all /launch urls to this server.
+
+
