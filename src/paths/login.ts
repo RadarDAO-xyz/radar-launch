@@ -17,7 +17,7 @@ LoginRouter.post('/', async (req, res) => {
     const walletAddress = req.body.wallet_address;
     if (!walletAddress) return res.status(400).end();
 
-    let user = await User.findOne({ wallet_address: walletAddress });
+    let user = await User.findOne({ wallet_address: { $eq: walletAddress } });
 
     if (!user) {
         user = await User.create({
