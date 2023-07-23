@@ -12,9 +12,21 @@ import http from 'http';
 import { readFileSync } from 'fs';
 import path from 'path';
 import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
 
 const app = express();
 app.disable('x-powered-by'); // Disable X-Powered-By: Express header
+process.env.NODE_ENV === 'production' && app.set('trust proxy', 1); // Nginx proxy
+
+// Max 100 requests per minute (Global)
+app.use(
+    rateLimit({
+        windowMs: 1 * 60 * 1000,
+        max: 100,
+        standardHeaders: true,
+        legacyHeaders: false
+    })
+);
 
 // Log request user agents
 app.use((req, res, next) => {
