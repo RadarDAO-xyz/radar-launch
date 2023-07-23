@@ -11,6 +11,8 @@ import {
     isValidObjectId
 } from 'mongoose';
 
+// Normalizes create, read, update and delete requests and responses
+
 type CheckAuthorizedFunc = (
     req: Request,
     res: Response

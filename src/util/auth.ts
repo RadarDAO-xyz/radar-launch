@@ -21,6 +21,11 @@ type User = Document<unknown, Record<string, never>, IUser> &
         never
     >;
 
+/**
+ * Handles authentication and adds authenticated user to req.user
+ * @param required - If required and not authed, fail with error 401
+ * @returns Express Middleware
+ */
 export function authenticate(required = false) {
     return async function (req: Request, res: Response, next: NextFunction) {
         if (req.user) return next();
