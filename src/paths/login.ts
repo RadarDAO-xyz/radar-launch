@@ -5,10 +5,14 @@ import { SessionCookieName, SessionCookieOptions } from '../constants';
 
 const randomHash = () => randomBytes(20).toString('hex');
 
+// Path: /login
+
 const LoginRouter = Router();
 
 LoginRouter.use(urlencoded({ extended: true }));
 
+// Handles login
+// Query Param: `redirect_uri` - Redirects to specified URI after successful login
 LoginRouter.post('/', async (req, res) => {
     const walletAddress = req.body.wallet_address;
     if (!walletAddress) return res.status(400).end();

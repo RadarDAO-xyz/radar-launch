@@ -8,6 +8,8 @@ import ProjectsVotesRouter from './projects/votes';
 
 const ProjectsRouter = Router();
 
+// Path: /projects
+
 ProjectsRouter.get(
     '/',
     readMany(Project, () => true, {

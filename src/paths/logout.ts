@@ -3,6 +3,10 @@ import { SessionCookieName, SessionCookieOptions } from '../constants';
 
 const LogoutRouter = Router();
 
+// Path: /logout
+
+// Handles logout
+// Query Param: `redirect_uri` - Redirects to specified URI after successful login
 LogoutRouter.get('/', async (req, res) => {
     res.clearCookie(SessionCookieName, {
         ...SessionCookieOptions

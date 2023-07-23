@@ -18,6 +18,7 @@ type CheckAuthorizedFunc = (
     res: Response
 ) => Promise<boolean> | boolean;
 
+// Add TS Types to Request so they can be accessed by future handlers
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
@@ -48,6 +49,12 @@ declare global {
     }
 }
 
+/**
+ * Fetches :id parameter with given model and assigns it to req.doc
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @returns Express Middleware
+ */
 export function prefetch(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true
@@ -67,6 +74,13 @@ export function prefetch(
     };
 }
 
+/**
+ * Create a new MongoDB Document using the provided Model
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @param doNext Call NextFunction instead of responding with created doc. Created doc is assigned to req.result
+ * @returns Express Middleware
+ */
 export function create(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true,
@@ -99,6 +113,13 @@ export function create(
     };
 }
 
+/**
+ * Fetches the MongoDB document associated to the :id parameter \
+ * If the :id and model match the prefetched document, it will be returned
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @returns Express Middleware
+ */
 export function read(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true
@@ -122,6 +143,14 @@ export function read(
     };
 }
 
+/**
+ * Returns multiple MongoDB documents that match the filter provided \
+ * URL Query values `skip` and `limit` will be parsed here and provided to Mongoose
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @param params Returns Mongoose model options
+ * @returns Express Middleware
+ */
 export function readMany(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true,
@@ -155,6 +184,14 @@ export function readMany(
     };
 }
 
+/**
+ * Updates the MongoDB Document associated to the :id
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @param checks Fields to allow or deny the modification of, this can be bypassed using req.bypass \
+ * If you want to deny modification whatsoever, use the Model Schema's `immutable` property instead
+ * @returns Express Middleware
+ */
 export function update(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true,
@@ -207,6 +244,12 @@ export function update(
     };
 }
 
+/**
+ * Deletes the MongoDB document associated with this :id
+ * @param model Mongoose Model
+ * @param checkAuthorized Function to check if the authenticated user can perform this action
+ * @returns Express Middleware
+ */
 export function del(
     model: Model<any>,
     checkAuthorized: CheckAuthorizedFunc = () => true

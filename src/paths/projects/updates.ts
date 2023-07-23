@@ -4,6 +4,8 @@ import ProjectUpdate from '../../models/ProjectUpdate';
 
 const ProjectsUpdatesRouter = Router();
 
+// Path: /projects/:id/updates
+
 ProjectsUpdatesRouter.get(
     '/',
     readMany(ProjectUpdate, () => true, {

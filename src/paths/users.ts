@@ -10,6 +10,8 @@ import UsersVotesRouter from './users/votes';
 
 const UsersRouter = Router();
 
+// Path: /users
+
 UsersRouter.use(authenticate());
 
 UsersRouter.get('/@me', (req, res) => {
