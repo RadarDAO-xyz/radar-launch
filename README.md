@@ -25,4 +25,4 @@ This will host it on `::3000`.
 
 The [production host](https://api.radardao.xyz/launch) is proxied using nginx, which is why the server is listening at odd ports, like 82 and 445 (see [ecosystem.config.js](/ecosystem.config.js)). Nginx redirects all /launch urls to this server.
 
-
+The Ratelimit system connects to a memcached server hosted on the local machine. This is required to start the server in prod mode
