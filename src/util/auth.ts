@@ -59,7 +59,8 @@ export function authenticate(required = false) {
             } catch (e) {
                 res.status(400).json({
                     message:
-                        'Unrecognized X-Auth-Method Header. Please use one of "Social" or "Wallet"'
+                        'Unrecognized X-Auth-Method Header. Please use one of "Social" or "Wallet"',
+                    provided: req.headers['x-auth-method']
                 });
             }
             if (!jwks) return;
