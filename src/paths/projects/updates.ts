@@ -16,12 +16,12 @@ ProjectsUpdatesRouter.get('/:id', read(ProjectUpdate));
 
 ProjectsUpdatesRouter.use(urlencoded({ extended: true }));
 
-ProjectsUpdatesRouter.post('/', (req, res, next) => {
-    req.body.project = req.doc?._id;
-    next();
-});
 ProjectsUpdatesRouter.post(
     '/',
+    (req, res, next) => {
+        req.body.project = req.doc?._id;
+        next();
+    },
     create(
         ProjectUpdate,
         (req) => req.doc?.founder.toString() === req.user?._id.toString()
