@@ -70,15 +70,12 @@ export function authenticate(required = false) {
                 algorithms: ['ES256']
             });
 
-            // Incase of Non-Torus Users
-            // Checking Wallet's `publicAddress` against the decoded JWT wallet's address
-            req.user =
-                (await User.findOne({
-                    wallet_address: {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        $eq: (jwtDecoded.payload as any).wallets[0].address
-                    }
-                })) ?? undefined;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const wallet = (jwtDecoded.payload as any).wallets[0];
+
+            req.user = await User.findByAuth(
+                (wallet.address || wallet.public_key) as string
+            );
         }
 
         if (!req.user && required) return res.status(401).end();

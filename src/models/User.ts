@@ -1,16 +1,35 @@
-import { Schema, model } from 'mongoose';
+import { HydratedDocument, Model, Schema, model } from 'mongoose';
+
+export type Wallet = {
+    type: string;
+};
+
+export type SocialLoginWallet = {
+    public_key: string;
+    curve: string;
+} & Wallet;
+
+export type ExternalWallet = {
+    address: string;
+} & Wallet;
+
+export type WalletResolvable = SocialLoginWallet | ExternalWallet;
 
 export interface IUser {
     name: string;
     profile?: string;
     bio?: string;
     socials?: string;
-    wallet_address: string;
+    wallets: WalletResolvable[];
     email?: string;
-    session_cookie: string;
 }
 
-const userSchema = new Schema<IUser>(
+interface UserModel extends Model<IUser> {
+    findByAuth(name: string): Promise<HydratedDocument<IUser>>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const userSchema = new Schema<IUser, UserModel>(
     {
         name: {
             type: String,
@@ -20,15 +39,20 @@ const userSchema = new Schema<IUser>(
         profile: String,
         bio: String,
         socials: String,
-        wallet_address: {
-            type: String,
-            required: true,
-            unique: true
-        },
+        wallets: [
+            new Schema(
+                {
+                    type: String,
+                    public_key: String,
+                    curve: String,
+                    address: String
+                },
+                { _id: false }
+            )
+        ],
         email: {
             type: String
-        },
-        session_cookie: String
+        }
     },
     { timestamps: true }
 );
@@ -39,11 +63,27 @@ userSchema.method('toJSON', function () {
         name: this.name,
         profile: this.profile,
         bio: this.bio,
-        socials: this.socials,
-        wallet_address: this.wallet_address
+        socials: this.socials
     };
 });
 
-const User = model<IUser>('User', userSchema, 'users');
+userSchema.static('findByAuth', async function (tokenId: string) {
+    return User.findOne({
+        $or: [
+            {
+                'wallets.address': {
+                    $eq: tokenId
+                }
+            },
+            {
+                'wallets.public_key': {
+                    $eq: tokenId
+                }
+            }
+        ]
+    });
+});
+
+const User = model<IUser, UserModel>('User', userSchema, 'users');
 
 export default User;
