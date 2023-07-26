@@ -5,16 +5,38 @@ config();
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 import { AddressInfo } from 'net';
-import cookieParser from 'cookie-parser';
 import Routes from './routes';
 import https from 'https';
 import http from 'http';
 import { readFileSync } from 'fs';
 import path from 'path';
 import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
+import MemcachedStore from 'rate-limit-memcached';
+import Memcached from 'memcached';
 
 const app = express();
 app.disable('x-powered-by'); // Disable X-Powered-By: Express header
+process.env.NODE_ENV === 'production' && app.set('trust proxy', 1); // Nginx proxy
+
+const expiration = 1 * 60;
+// Max 100 requests per minute (Global)
+app.use(
+    rateLimit({
+        windowMs: expiration * 1000,
+        max: 100,
+        standardHeaders: true,
+        legacyHeaders: false,
+        store:
+            process.env.NODE_ENV === 'production'
+                ? new MemcachedStore({
+                      expiration,
+                      client: new Memcached(['127.0.0.1:11211']),
+                      prefix: 'remoteip:'
+                  })
+                : undefined
+    })
+);
 
 // Log request user agents
 app.use((req, res, next) => {
@@ -40,7 +62,6 @@ app.use(
     })
 );
 app.use(json()); // Parse JSON Body
-app.use(cookieParser()); // Parse cookies
 
 // Apply the Base URL if it was provided
 app.use(process.env.BASE_URL ?? '/', Routes);

@@ -9,23 +9,23 @@ const ProjectsVotesRouter = Router();
 
 ProjectsVotesRouter.use(authenticate(true)); // Mandatory Authentication
 
-// Prepares the (already fetched) data for the create handler
-ProjectsVotesRouter.post('/', (req, res, next) => {
-    req.body.project = req.doc?._id;
-    req.body.user = req.user?._id;
-    next();
-});
-// Create the vote doc
 ProjectsVotesRouter.post(
     '/',
-    create(UserVote, () => true, true)
+    // Prepares the (already fetched) data for the create handler
+    (req, res, next) => {
+        req.body.project = req.doc?._id;
+        req.body.user = req.user?._id;
+        next();
+    },
+    // Create the vote doc
+    create(UserVote, () => true, true),
+    // Update the project's vote count and return the project in the body
+    async (req, res) => {
+        if (req.doc) req.doc.vote_count += 1;
+        await req.doc?.save();
+        res.json(req.doc?.toJSON()).end();
+    }
 );
-// Update the project's vote count and return the project in the body
-ProjectsVotesRouter.post('/', async (req, res) => {
-    if (req.doc) req.doc.vote_count += 1;
-    await req.doc?.save();
-    res.json(req.doc?.toJSON()).end();
-});
 
 // Deletes a vote for this project that was done during the current vote period (today).
 ProjectsVotesRouter.delete('/', async (req, res) => {
