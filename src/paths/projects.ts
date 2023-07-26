@@ -67,7 +67,7 @@ ProjectsRouter.patch(
     update(
         Project,
         (req) => req.doc?.founder.toString() === req.user?._id.toString(),
-        { deniedFields: ['status', '__v'] }
+        { deniedFields: ['status', '__v', 'curation'] }
     )
 );
 

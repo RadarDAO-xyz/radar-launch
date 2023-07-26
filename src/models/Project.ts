@@ -35,6 +35,10 @@ export interface IProject {
     supporter_count: number;
     vote_count: number;
     status: ProjectStatus;
+    curation: {
+        start: string;
+        end: string;
+    };
 }
 
 const projectSchema = new Schema<IProject>(
@@ -141,7 +145,14 @@ const projectSchema = new Schema<IProject>(
             required: true,
             emum: [0, 1, 2, 3, 4, 5],
             default: 0
-        }
+        },
+        curation: new Schema(
+            {
+                start: String, // ISO Datestring
+                end: String // ISO Datestring
+            },
+            { _id: false }
+        )
     },
     { timestamps: true }
 );
