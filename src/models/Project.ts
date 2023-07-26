@@ -11,6 +11,7 @@ export enum ProjectStatus {
 
 export interface IProject {
     title: string;
+    pool: Types.ObjectId;
     founder: Types.ObjectId;
     description: string;
     video_url: string;
@@ -41,6 +42,10 @@ const projectSchema = new Schema<IProject>(
         title: {
             type: String,
             required: true
+        },
+        pool: {
+            type: Schema.Types.ObjectId,
+            ref: 'Pool'
         },
         founder: {
             type: Schema.Types.ObjectId,
