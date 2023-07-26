@@ -29,15 +29,15 @@ export interface IProject {
     waitlist: boolean;
     milestones: { amount: number; text: string }[];
     edition_price: number;
-    mint_end_date: string;
+    mint_end_date: string; // ISO Datestring
     benefits: { amount: number; text: string }[];
     admin_address: string;
     supporter_count: number;
     vote_count: number;
     status: ProjectStatus;
     curation: {
-        start: string;
-        end: string;
+        start: string; // ISO Datestring
+        end: string; // ISO Datestring
     };
 }
 
