@@ -68,6 +68,40 @@ UsersRouter.get(
 
 UsersRouter.use(authenticate(true)); // Mandatory Authentication
 
+UsersRouter.post('/merge', async (req, res) => {
+    if (!req.bypass) return res.status(403).end();
+
+    if (
+        (!req.body.primaryAuth || !req.body.secondaryAuth) &&
+        (!req.body.primaryId || !req.body.secondaryId)
+    )
+        return res.status(400).end();
+
+    let primaryUser, secondaryUser;
+    if (req.body.primaryId && req.body.secondaryId) {
+        primaryUser = await User.findById(req.body.primaryId);
+        secondaryUser = await User.findById(req.body.secondaryId);
+    } else {
+        primaryUser = await User.findByAuth(req.body.primaryAuth);
+        secondaryUser = await User.findByAuth(req.body.secondaryAuth);
+    }
+
+    if (!primaryUser)
+        return res.status(404).json({ message: 'Primary user not found' });
+    if (!secondaryUser)
+        return res.status(404).json({ message: 'Secondary user not found' });
+
+    primaryUser.wallets.push(...secondaryUser.wallets);
+    await primaryUser.save();
+    await secondaryUser.deleteOne();
+
+    res.status(200).json({
+        message: 'Successfully merged users',
+        from: secondaryUser._id,
+        to: primaryUser._id
+    });
+});
+
 UsersRouter.patch(
     '/:id',
     (req, res, next) => {
