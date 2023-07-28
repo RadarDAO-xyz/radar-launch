@@ -7,7 +7,7 @@ module.exports = {
         PORT: 80,
         HTTPS_PORT: 443,
         NODE_ENV: 'development',
-        BASE_URL: '/launch'
+        BASE_URL: 'launch'
     },
     env_production: {
         PORT: 82,

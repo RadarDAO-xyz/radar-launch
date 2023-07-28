@@ -64,7 +64,7 @@ app.use(
 app.use(json()); // Parse JSON Body
 
 // Apply the Base URL if it was provided
-app.use(process.env.BASE_URL ?? '/', Routes);
+app.use('/' + (process.env.BASE_URL ?? ''), Routes);
 
 // Connect to MongoDB
 connect(process.env.MONGO_URL).then(() => console.info('MongoDB connected'));
