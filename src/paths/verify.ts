@@ -1,5 +1,6 @@
 import { Request, Router } from 'express';
 import * as jose from 'jose';
+import User from '../models/User';
 
 const VerifyRouter = Router();
 
@@ -56,8 +57,10 @@ VerifyRouter.post('/', async (req, res) => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wallet = (jwtDecoded.payload as any).wallets[0];
-    if (wallet.public_key === toverif || wallet.address === toverif) {
-        // Verified
+    if ((wallet.public_key || wallet.address) === toverif) {
+        let existingUser = await User.findByAuth(toverif);
+        if (!existingUser)
+            existingUser = await User.create({ wallets: [wallet] });
         res.status(200).json({ name: 'Verification Successful' });
     } else {
         res.status(400).json({ name: 'Verification Failed' });

@@ -25,7 +25,7 @@ export interface IUser {
 }
 
 interface UserModel extends Model<IUser> {
-    findByAuth(name: string): Promise<HydratedDocument<IUser>>;
+    findByAuth(idToken: string): Promise<HydratedDocument<IUser>>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
