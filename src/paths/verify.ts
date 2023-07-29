@@ -61,10 +61,10 @@ VerifyRouter.post('/', async (req, res) => {
         wallet.public_key === toverif ||
         wallet.address.toUpperCase() === toverif.toUpperCase()
     ) {
-        let existingUser = await User.findByAuth(toverif.toUpperCase());
+        let existingUser = await User.findByAuth(toverif);
         if (!existingUser)
             existingUser = await User.create({
-                wallets: [{ ...wallet, address: wallet.address.toUpperCase() }]
+                wallets: [wallet]
             });
         res.status(200).json({ name: 'Verification Successful' });
     } else {
