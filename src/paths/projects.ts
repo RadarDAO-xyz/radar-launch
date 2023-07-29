@@ -5,6 +5,7 @@ import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import { Types } from 'mongoose';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
+import rl from '../ratelimit';
 
 const ProjectsRouter = Router();
 
@@ -30,6 +31,7 @@ ProjectsRouter.use(authenticate(true)); // Authentication mandatory
 
 ProjectsRouter.post(
     '/',
+    rl('ProjectCreate', 60, 5),
     async (req, res, next) => {
         (req.body as Record<string, Types.ObjectId>).founder = req.user
             ?._id as Types.ObjectId;
@@ -46,6 +48,7 @@ const allowedSwitches = {
 // Status modifier
 ProjectsRouter.patch(
     '/:id',
+    rl('ProjectChange', 60, 20),
     async (req, res, next) => {
         if (!req.body.status) return next();
 
@@ -73,6 +76,7 @@ ProjectsRouter.patch(
 
 ProjectsRouter.delete(
     '/:id',
+    rl('ProjectChange', 60, 20),
     del(
         Project,
         (req) => req.doc?.founder.toString() === req.user?._id.toString()

@@ -1,6 +1,7 @@
 import { Request, Router } from 'express';
 import * as jose from 'jose';
 import User from '../models/User';
+import rl from '../ratelimit';
 
 const VerifyRouter = Router();
 
@@ -25,7 +26,7 @@ function getJWKSetURL(req: Request) {
     return new URL('https://authjs.web3auth.io/jwks');
 }
 
-VerifyRouter.post('/', async (req, res) => {
+VerifyRouter.post('/', rl('Verify', 60, 5), async (req, res) => {
     // passed from the frontend in the Authorization header
     const idToken = req.headers.authorization?.split(' ')[1];
 

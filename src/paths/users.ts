@@ -7,6 +7,7 @@ import formidable from 'formidable';
 import { createReadStream } from 'fs';
 import { ImgurClient } from 'imgur';
 import UserVote from '../models/UserVote';
+import rl from '../ratelimit';
 
 const UsersRouter = Router();
 
@@ -104,6 +105,7 @@ UsersRouter.post('/merge', async (req, res) => {
 
 UsersRouter.patch(
     '/:id',
+    rl('UserUpdate', 60, 5),
     (req, res, next) => {
         if (req.headers['content-type']?.startsWith('multipart/form-data')) {
             const form = formidable({
@@ -148,6 +150,7 @@ UsersRouter.patch(
 
 UsersRouter.delete(
     '/:id',
+    rl('UserUpdate', 120, 1),
     del(User, (req) => req.user?._id.toString() === req.params.id)
 );
 
