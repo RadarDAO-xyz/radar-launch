@@ -13,7 +13,9 @@ export type ExternalWallet = {
     address: string;
 } & Wallet;
 
-export type WalletResolvable = SocialLoginWallet | ExternalWallet;
+export type WalletResolvable = Partial<SocialLoginWallet> &
+    Partial<ExternalWallet> &
+    Wallet;
 
 export interface IUser {
     name: string;
@@ -67,12 +69,18 @@ userSchema.method('toJSON', function () {
     };
 });
 
+userSchema.pre('save', function () {
+    this.wallets.forEach((wallet) => {
+        if (wallet.address) wallet.address = wallet.address.toUpperCase();
+    });
+});
+
 userSchema.static('findByAuth', async function (tokenId: string) {
     return User.findOne({
         $or: [
             {
                 'wallets.address': {
-                    $eq: tokenId
+                    $eq: tokenId.toUpperCase()
                 }
             },
             {

@@ -55,7 +55,7 @@ export function authenticate(required = false) {
             // Get the JWK set used to sign the JWT issued by Web3Auth
             let jwks;
             try {
-                jwks = createRemoteJWKSet(getJWKSetURL(req));
+                jwks = await createRemoteJWKSet(getJWKSetURL(req));
             } catch (e) {
                 res.status(400).json({
                     message:
@@ -74,7 +74,7 @@ export function authenticate(required = false) {
             const wallet = (jwtDecoded.payload as any).wallets[0];
 
             req.user = await User.findByAuth(
-                (wallet.address || wallet.public_key) as string
+                (wallet.address.toUpperCase() || wallet.public_key) as string
             );
         }
 

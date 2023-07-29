@@ -34,7 +34,7 @@ VerifyRouter.post('/', async (req, res) => {
     // Get the JWK set used to sign the JWT issued by Web3Auth
     let jwks;
     try {
-        jwks = jose.createRemoteJWKSet(getJWKSetURL(req));
+        jwks = await jose.createRemoteJWKSet(getJWKSetURL(req));
     } catch (e) {
         res.status(400).json({
             message:
@@ -57,10 +57,15 @@ VerifyRouter.post('/', async (req, res) => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wallet = (jwtDecoded.payload as any).wallets[0];
-    if ((wallet.public_key || wallet.address) === toverif) {
+    if (
+        wallet.public_key === toverif ||
+        wallet.address.toUpperCase() === toverif.toUpperCase()
+    ) {
         let existingUser = await User.findByAuth(toverif);
         if (!existingUser)
-            existingUser = await User.create({ wallets: [wallet] });
+            existingUser = await User.create({
+                wallets: [wallet]
+            });
         res.status(200).json({ name: 'Verification Successful' });
     } else {
         res.status(400).json({ name: 'Verification Failed' });
