@@ -8,6 +8,7 @@ import { createReadStream } from 'fs';
 import { ImgurClient } from 'imgur';
 import UserVote from '../models/UserVote';
 import rl from '../ratelimit';
+import { isValidObjectId } from 'mongoose';
 
 const UsersRouter = Router();
 
@@ -75,6 +76,12 @@ UsersRouter.post('/merge', async (req, res) => {
     if (
         (!req.body.primaryAuth || !req.body.secondaryAuth) &&
         (!req.body.primaryId || !req.body.secondaryId)
+    )
+        return res.status(400).end();
+
+    if (
+        !isValidObjectId(req.body.primaryId) ||
+        !isValidObjectId(req.body.secondaryId)
     )
         return res.status(400).end();
 
