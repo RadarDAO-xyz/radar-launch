@@ -38,7 +38,8 @@ app.use(
     cors({
         origin: [
             'https://www.launch.radardao.xyz',
-            'https://launch.radardao.xyz'
+            'https://launch.radardao.xyz',
+            'https://radar-launch.netlify.app'
         ],
         credentials: true
     })
