@@ -12,6 +12,7 @@ module.exports = {
     env_production: {
         PORT: 82,
         HTTPS_PORT: 445,
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        BASE_URL: ''
     }
 };
