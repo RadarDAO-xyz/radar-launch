@@ -15,9 +15,7 @@ const ProjectsRouter = Router();
 // Query Param: `all` - Fetches projects without filtering through unapproved ones
 ProjectsRouter.get(
     '/',
-    readMany(Project, () => true, {
-        filter: (req) => (req.params.all ? {} : { status: { $in: [2, 3] } })
-    })
+    readMany(Project, () => true)
 );
 ProjectsRouter.get('/:id', read(Project));
 
