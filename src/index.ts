@@ -39,7 +39,8 @@ app.use(
         origin: [
             'https://www.launch.radardao.xyz',
             'https://launch.radardao.xyz',
-            'https://radar-launch.netlify.app'
+            'https://radar-launch.netlify.app',
+            'https://radarlaunch.app/'
         ],
         credentials: true
     })
