@@ -40,7 +40,7 @@ app.use(
             'https://www.launch.radardao.xyz',
             'https://launch.radardao.xyz',
             'https://radar-launch.netlify.app',
-            'https://radarlaunch.app/'
+            'https://radarlaunch.app'
         ],
         credentials: true
     })
