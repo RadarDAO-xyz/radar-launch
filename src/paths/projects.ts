@@ -16,7 +16,7 @@ const ProjectsRouter = Router();
 ProjectsRouter.get(
     '/',
     readMany(Project, () => true, {
-        filter: (req) => (req.query.all ? {} : { status: { $in: [2, 3] } })
+        filter: (req) => ('all' in req.query ? {} : { status: { $in: [2, 3] } })
     })
 );
 ProjectsRouter.get('/:id', read(Project));

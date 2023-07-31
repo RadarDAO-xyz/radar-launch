@@ -32,7 +32,7 @@ UsersRouter.get(
     '/:id/projects',
     readMany(Project, () => true, {
         filter: (req) =>
-            req.query.all
+            'all' in req.query
                 ? { founder: req.params.id }
                 : {
                       founder: req.params.id,
