@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { del, prefetch, read, readMany, update } from '../util/crud';
+import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import User from '../models/User';
 import { authenticate } from '../util/auth';
 import Project, { ProjectStatus } from '../models/Project';
@@ -70,46 +70,6 @@ UsersRouter.get(
 
 UsersRouter.use(authenticate(true)); // Mandatory Authentication
 
-UsersRouter.post('/merge', async (req, res) => {
-    if (!req.bypass) return res.status(403).end();
-
-    if (
-        (!req.body.primaryAuth || !req.body.secondaryAuth) &&
-        (!req.body.primaryId || !req.body.secondaryId)
-    )
-        return res.status(400).end();
-
-    if (
-        !isValidObjectId(req.body.primaryId) ||
-        !isValidObjectId(req.body.secondaryId)
-    )
-        return res.status(400).end();
-
-    let primaryUser, secondaryUser;
-    if (req.body.primaryId && req.body.secondaryId) {
-        primaryUser = await User.findById(req.body.primaryId);
-        secondaryUser = await User.findById(req.body.secondaryId);
-    } else {
-        primaryUser = await User.findByAuth(req.body.primaryAuth);
-        secondaryUser = await User.findByAuth(req.body.secondaryAuth);
-    }
-
-    if (!primaryUser)
-        return res.status(404).json({ message: 'Primary user not found' });
-    if (!secondaryUser)
-        return res.status(404).json({ message: 'Secondary user not found' });
-
-    primaryUser.wallets.push(...secondaryUser.wallets);
-    await primaryUser.save();
-    await secondaryUser.deleteOne();
-
-    res.status(200).json({
-        message: 'Successfully merged users',
-        from: secondaryUser._id,
-        to: primaryUser._id
-    });
-});
-
 UsersRouter.patch(
     '/:id',
     rl('UserUpdate', 60, 5),
@@ -160,5 +120,52 @@ UsersRouter.delete(
     rl('UserUpdate', 120, 1),
     del(User, (req) => req.user?._id.toString() === req.params.id)
 );
+
+// ------------------ Admin only section ------------------
+
+UsersRouter.post(
+    '/',
+    create(User, () => false)
+);
+
+UsersRouter.post('/merge', async (req, res) => {
+    if (!req.bypass) return res.status(403).end();
+
+    if (
+        (!req.body.primaryAuth || !req.body.secondaryAuth) &&
+        (!req.body.primaryId || !req.body.secondaryId)
+    )
+        return res.status(400).end();
+
+    if (
+        !isValidObjectId(req.body.primaryId) ||
+        !isValidObjectId(req.body.secondaryId)
+    )
+        return res.status(400).end();
+
+    let primaryUser, secondaryUser;
+    if (req.body.primaryId && req.body.secondaryId) {
+        primaryUser = await User.findById(req.body.primaryId);
+        secondaryUser = await User.findById(req.body.secondaryId);
+    } else {
+        primaryUser = await User.findByAuth(req.body.primaryAuth);
+        secondaryUser = await User.findByAuth(req.body.secondaryAuth);
+    }
+
+    if (!primaryUser)
+        return res.status(404).json({ message: 'Primary user not found' });
+    if (!secondaryUser)
+        return res.status(404).json({ message: 'Secondary user not found' });
+
+    primaryUser.wallets.push(...secondaryUser.wallets);
+    await primaryUser.save();
+    await secondaryUser.deleteOne();
+
+    res.status(200).json({
+        message: 'Successfully merged users',
+        from: secondaryUser._id,
+        to: primaryUser._id
+    });
+});
 
 export default UsersRouter;
