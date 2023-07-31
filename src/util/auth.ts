@@ -79,7 +79,7 @@ export function authenticate(required = false) {
         }
 
         if (!req.user && required) return res.status(401).end();
-        req.bypass = false;
+        req.bypass = req.user?.bypasser ?? false;
         next();
     };
 }

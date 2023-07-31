@@ -24,6 +24,7 @@ export interface IUser {
     socials?: string;
     wallets: WalletResolvable[];
     email?: string;
+    bypasser: boolean;
 }
 
 interface UserModel extends Model<IUser> {
@@ -52,9 +53,8 @@ const userSchema = new Schema<IUser, UserModel>(
                 { _id: false }
             )
         ],
-        email: {
-            type: String
-        }
+        email: String,
+        bypasser: { type: Boolean, default: false, immutable: true }
     },
     { timestamps: true }
 );
