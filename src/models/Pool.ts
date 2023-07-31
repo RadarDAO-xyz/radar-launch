@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 export type Sponsor = {
-    logo: string;
+    logo?: string;
     name: string;
     contribution: number;
 };
@@ -11,6 +11,7 @@ export interface IPool {
     subtitle: string;
     description: string;
     pool_amount: number;
+    hero_image?: string;
     sponsors: Sponsor[];
     video: string;
 }
@@ -22,13 +23,19 @@ const poolSchema = new Schema<IPool>(
             required: true
         },
         subtitle: {
-            type: String
+            type: String,
+            required: true
         },
         description: {
-            type: String
+            type: String,
+            required: true
         },
         pool_amount: {
-            type: Number
+            type: Number,
+            required: true
+        },
+        hero_image: {
+            type: String
         },
         sponsors: [
             new Schema(
@@ -37,17 +44,20 @@ const poolSchema = new Schema<IPool>(
                         type: String
                     },
                     name: {
-                        type: String
+                        type: String,
+                        required: true
                     },
                     contribution: {
-                        type: String
+                        type: String,
+                        required: true
                     }
                 },
                 { _id: false }
             )
         ],
         video: {
-            type: String
+            type: String,
+            required: true
         }
     },
     { timestamps: true }
