@@ -45,6 +45,8 @@ const allowedSwitches = {
     1: [2]
 } as Record<number, number[]>;
 
+const canSwitch = (c: number, a: number) => allowedSwitches[c]?.includes(a);
+
 // Status modifier
 ProjectsRouter.patch(
     '/:id',
@@ -56,12 +58,11 @@ ProjectsRouter.patch(
             return res.status(403).end();
         if (!req.doc) return;
 
-        if (
-            !allowedSwitches[req.doc?.status as number]?.includes(
-                req.body.status
-            )
-        )
+        if (!canSwitch(req.doc?.status, req.body.status))
             return res.status(400).end();
+
+        if (req.doc.status === 1 && req.body.status === 2)
+            req.doc.launched_at = new Date().toISOString();
 
         req.doc.status = req.body.status;
         await req.doc.save();

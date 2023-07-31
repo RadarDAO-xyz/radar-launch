@@ -35,6 +35,7 @@ export interface IProject {
     supporter_count: number;
     vote_count: number;
     status: ProjectStatus;
+    launched_at: string; // ISO Datestring
     curation: {
         start: string; // ISO Datestring
         end: string; // ISO Datestring
@@ -145,6 +146,9 @@ const projectSchema = new Schema<IProject>(
             required: true,
             emum: [0, 1, 2, 3, 4, 5],
             default: 0
+        },
+        launched_at: {
+            type: String // ISO Datestring
         },
         curation: new Schema(
             {
