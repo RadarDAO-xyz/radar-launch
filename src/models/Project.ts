@@ -17,6 +17,7 @@ export interface IProject {
     video_url: string;
     tldr: string;
     brief: string;
+    tags: string[];
     inspiration: string;
     team: { name: string; bio?: string; email: string }[];
     collaborators?: string;
@@ -67,6 +68,7 @@ const projectSchema = new Schema<IProject>(
             type: String,
             required: true
         },
+        tags: [String],
         inspiration: {
             type: String,
             required: true
