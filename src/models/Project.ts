@@ -16,13 +16,7 @@ export interface IProject {
     description: string;
     video_url: string;
     tldr: string;
-    brief:
-        | 'The Enchantress'
-        | 'The Healer'
-        | 'The Mediator'
-        | 'The Teacher'
-        | 'The Artist'
-        | 'Other';
+    brief: string;
     inspiration: string;
     team: { name: string; bio?: string; email: string }[];
     collaborators?: string;
@@ -71,15 +65,7 @@ const projectSchema = new Schema<IProject>(
         },
         brief: {
             type: String,
-            required: true,
-            enum: [
-                'The Enchantress',
-                'The Healer',
-                'The Mediator',
-                'The Teacher',
-                'The Artist',
-                'Other'
-            ]
+            required: true
         },
         inspiration: {
             type: String,
