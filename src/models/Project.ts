@@ -149,10 +149,6 @@ const projectSchema = new Schema<IProject>(
     { timestamps: true }
 );
 
-projectSchema.method('toJSON', function () {
-    return { ...this.toObject(), admin_address: undefined };
-});
-
 const Project = model<IProject>('Project', projectSchema, 'projects');
 
 export default Project;
