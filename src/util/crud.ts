@@ -92,15 +92,21 @@ export function create(
         if (!(await checkAuthorized(req, res)) && !req.bypass)
             return res.status(403).end();
 
-        const doc = await model.create(docData).catch((r: MongooseError) => {
+        const doc = await model.create(docData).catch((r: any) => {
             if (r.name === 'ValidationError') {
-                res.status(400)
+                return res
+                    .status(400)
                     .json({
                         error: r.name,
                         message: r.message
                     })
                     .end();
+            } else if (r.name === 'MongoServerError') {
+                if ((model as any).handlers[r.code]) {
+                    return (model as any).handlers[r.code](r, req, res, next);
+                }
             }
+            res.status(500).end();
         });
         if (!doc) return;
 

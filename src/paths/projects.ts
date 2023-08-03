@@ -6,6 +6,7 @@ import { Types } from 'mongoose';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
 import rl from '../ratelimit';
+import ProjectsSupportersRouter from './projects/supporters';
 
 const ProjectsRouter = Router();
 
@@ -26,6 +27,8 @@ ProjectsRouter.use('/:id', prefetch(Project));
 ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
 
 ProjectsRouter.use('/:projectId/votes', ProjectsVotesRouter);
+
+ProjectsRouter.use('/:projectId/supporters', ProjectsSupportersRouter);
 
 ProjectsRouter.use(authenticate(true)); // Authentication mandatory
 
