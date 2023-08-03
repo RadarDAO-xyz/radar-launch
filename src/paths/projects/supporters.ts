@@ -1,7 +1,10 @@
 import { Router, urlencoded } from 'express';
 import { authenticate } from '../../util/auth';
 import { create, readMany } from '../../util/crud';
-import ProjectSupporter from '../../models/ProjectSupporter';
+import ProjectSupporter, {
+    ProjectSupporterType
+} from '../../models/ProjectSupporter';
+import { json2csv } from 'json-2-csv';
 
 const ProjectsSupportersRouter = Router();
 
@@ -28,5 +31,30 @@ ProjectsSupportersRouter.get(
                 : {}
     })
 );
+
+ProjectsSupportersRouter.get('/csv', async (req, res) => {
+    if (req.user?._id !== req.doc?.founder) return res.status(403).end();
+    const supporters = await ProjectSupporter.find(
+        'signups' in req.query
+            ? { type: 0 }
+            : 'contributors' in req.query
+            ? { type: 1 }
+            : {}
+    ).then((a) =>
+        a.map((x) => ({ ...x.toObject(), type: ProjectSupporterType[x.type] }))
+    );
+
+    const csv = await json2csv(supporters, {
+        keys: ['type', 'email', 'social', 'skillset', 'contribution'],
+        emptyFieldValue: ''
+    });
+
+    res.set('Content-Type', 'text/csv');
+    res.set(
+        'Content-Disposition',
+        `inline; filename=${req.doc?.title} contributors.csv`
+    );
+    res.send(Buffer.from(csv)).end();
+});
 
 export default ProjectsSupportersRouter;

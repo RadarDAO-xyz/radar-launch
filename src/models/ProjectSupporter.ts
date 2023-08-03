@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { Model, ObjectId, Schema, model } from 'mongoose';
 
 export enum ProjectSupporterType {
-    Signer,
-    Contributor
+    Signup,
+    Contribution
 }
 
 export interface IProjectSupporter {

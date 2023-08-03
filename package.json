@@ -40,6 +40,7 @@
     "imgur": "^2.3.0",
     "jose": "^4.14.4",
     "jquery": "^3.7.0",
+    "json-2-csv": "^4.1.0",
     "memcached": "^2.2.2",
     "mongoose": "^7.3.1",
     "rate-limit-memcached": "^0.6.0"

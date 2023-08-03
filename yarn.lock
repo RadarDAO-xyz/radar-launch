@@ -657,6 +657,11 @@ debug@4.x, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   dependencies:
     ms "2.1.2"
 
+deeks@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/deeks/-/deeks-3.0.1.tgz#f54123f6ddfe8f7a22480fb3c9d2e6ac4a6d9494"
+  integrity sha512-rBAWIXSKXvGQOdG5GLGaGMfOCHvvHln2fFJ2UW8cvJouoAhOiNiLGHLYYcyqpeNQ93vPBeRuzv1bAr8bvceakw==
+
 deep-is@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
@@ -696,6 +701,11 @@ dir-glob@^3.0.1:
   integrity sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==
   dependencies:
     path-type "^4.0.0"
+
+doc-path@4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/doc-path/-/doc-path-4.0.1.tgz#4f1f745a79d665da3fdcfeac0232680a7f0dc231"
+  integrity sha512-3EpO6FV6R1f4dimmTBhDCqqWZFZGTLGoagojNONcH3fWabtCh+SwSlzk2xNeajzaPvDAOxUUN6euh0JajTQ4Zg==
 
 doctrine@^3.0.0:
   version "3.0.0"
@@ -1296,6 +1306,14 @@ js-yaml@^4.1.0:
   integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
   dependencies:
     argparse "^2.0.1"
+
+json-2-csv@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/json-2-csv/-/json-2-csv-4.1.0.tgz#d56f39fa95999e36f87f41c2225b6b68e19747c5"
+  integrity sha512-O/8UMNeXOuQ3ztsuMpkr7ybE+GEL3KVwOX5qdXBt44Qabt3UdNCIuUMGPNMQ6LPxZZZHfw5UxjMclxZ4IU2lTQ==
+  dependencies:
+    deeks "3.0.1"
+    doc-path "4.0.1"
 
 json-schema-traverse@^0.4.1:
   version "0.4.1"
