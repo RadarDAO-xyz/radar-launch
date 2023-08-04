@@ -1,7 +1,8 @@
 import { Router, urlencoded } from 'express';
-import { create, del, read, readMany, update } from '../../util/crud';
 import ProjectUpdate from '../../models/ProjectUpdate';
 import rl from '../../ratelimit';
+import { authenticate } from '../../util/auth';
+import { create, del, read, readMany, update } from '../../util/crud';
 
 const ProjectsUpdatesRouter = Router();
 
@@ -14,6 +15,8 @@ ProjectsUpdatesRouter.get(
     })
 );
 ProjectsUpdatesRouter.get('/:id', read(ProjectUpdate));
+
+ProjectsUpdatesRouter.use(authenticate(true));
 
 ProjectsUpdatesRouter.use(urlencoded({ extended: true }));
 
