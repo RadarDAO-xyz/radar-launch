@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import Project from '../models/Project';
+import Project, { IProject } from '../models/Project';
 import { authenticate } from '../util/auth';
 import { create, del, prefetch, read, readMany, update } from '../util/crud';
-import { Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
 import rl from '../ratelimit';
 import ProjectsSupportersRouter from './projects/supporters';
+import { retrieveVideoThumbnail } from '../util/regex';
 
 const ProjectsRouter = Router();
 
@@ -20,9 +21,20 @@ ProjectsRouter.get(
         filter: (req) => ('all' in req.query ? {} : { status: { $in: [2, 3] } })
     })
 );
-ProjectsRouter.get('/:id', read(Project));
 
 ProjectsRouter.use('/:id', prefetch(Project));
+
+ProjectsRouter.get('/:id', read(Project));
+
+ProjectsRouter.get('/:id/metadata', (req, res) => {
+    const project = req.doc as HydratedDocument<IProject>;
+    res.json({
+        name: project.title,
+        image: retrieveVideoThumbnail(project.video_url),
+        description: project.description,
+        external_url: `https://radarlaunch.app/projects/${project._id}`
+    }).end();
+});
 
 ProjectsRouter.use('/:projectId/updates', ProjectsUpdatesRouter);
 
