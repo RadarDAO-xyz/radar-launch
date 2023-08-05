@@ -1,12 +1,9 @@
-import { ethers } from 'ethers';
 import { Router } from 'express';
-import { HydratedDocument, Types } from 'mongoose';
-import Project, { IProject } from '../models/Project';
+import { Types } from 'mongoose';
+import Project from '../models/Project';
 import rl from '../ratelimit';
 import { authenticate } from '../util/auth';
 import { create, del, prefetch, read, readMany, update } from '../util/crud';
-import { retrieveVideoThumbnail } from '../util/regex';
-import { abi, chainId, contractAddress } from '../util/web3';
 import ProjectsSupportersRouter from './projects/supporters';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
@@ -23,31 +20,6 @@ ProjectsRouter.get(
         filter: (req) => ('all' in req.query ? {} : { status: { $in: [2, 3] } })
     })
 );
-
-ProjectsRouter.get('/:tokenId/metadata', async (req, res) => {
-    const tokenId = req.params.tokenId;
-    if (tokenId === undefined) {
-        return res.status(404).end();
-    }
-    const provider = ethers.getDefaultProvider(chainId);
-    const contract = new ethers.Contract(contractAddress, abi, provider);
-    const [_status, _fee, _balance, _owner, id] =
-        (await contract.editions(tokenId)) ?? [];
-
-    if (!id) {
-        return res.status(404).end();
-    }
-    const project = (await Project.findById(id)) as HydratedDocument<IProject>;
-    if (!project) {
-        return res.status(404).end();
-    }
-    res.json({
-        name: project.title,
-        image: retrieveVideoThumbnail(project.video_url),
-        description: project.description,
-        external_url: `https://radarlaunch.app/projects/${project._id}`
-    }).end();
-});
 
 ProjectsRouter.use('/:id', prefetch(Project));
 
