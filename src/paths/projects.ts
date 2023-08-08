@@ -37,6 +37,7 @@ ProjectsRouter.use(authenticate(true)); // Authentication mandatory
 ProjectsRouter.post(
     '/',
     rl('ProjectCreate', 60, 5),
+    imageUpload('thumbnail'),
     async (req, res, next) => {
         (req.body as Record<string, Types.ObjectId>).founder = req.user
             ?._id as Types.ObjectId;
