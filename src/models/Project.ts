@@ -1,4 +1,5 @@
 import { Schema, model, Types } from 'mongoose';
+import { retrieveVideoThumbnail } from '../util/regex';
 
 export enum ProjectStatus {
     'In Review',
@@ -14,6 +15,7 @@ export interface IProject {
     pool: Types.ObjectId;
     founder: Types.ObjectId;
     description: string;
+    thumbnail?: string;
     video_url: string;
     tldr: string;
     brief: string;
@@ -55,6 +57,13 @@ const projectSchema = new Schema<IProject>(
         description: {
             type: String,
             required: true
+        },
+        thumbnail: {
+            type: String,
+            get: function (val: string) {
+                const tthis = this as IProject;
+                return val ?? retrieveVideoThumbnail(tthis.video_url);
+            }
         },
         video_url: {
             type: String,
@@ -146,7 +155,7 @@ const projectSchema = new Schema<IProject>(
             { _id: false }
         )
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { getters: true } }
 );
 
 const Project = model<IProject>('Project', projectSchema, 'projects');

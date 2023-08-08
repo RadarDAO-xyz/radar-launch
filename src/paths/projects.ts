@@ -7,6 +7,7 @@ import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import ProjectsSupportersRouter from './projects/supporters';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
+import { imageUpload } from '../util/upload';
 
 const ProjectsRouter = Router();
 
@@ -51,11 +52,12 @@ const allowedSwitches = {
 
 const canSwitch = (c: number, a: number) => allowedSwitches[c]?.includes(a);
 
-// Status modifier
 ProjectsRouter.patch(
     '/:id',
     rl('ProjectChange', 60, 20),
+    imageUpload('thumbnail'),
     async (req, res, next) => {
+        // Status modifier
         if (!req.body.status) return next();
 
         if (req.doc?.founder.toString() !== req.user?._id.toString())
