@@ -33,11 +33,27 @@ export function imageUpload(
                 // Prepare fields for the next handler
                 req.body = Object.keys(fields)
                     .map((x) => [x, fields[x]?.[0]])
-                    .filter((x) => x[1])
+                    .filter((x) => x[1] && x[0] !== 'payload_json')
                     .reduce(
                         (p, c) => ((p as Record<string, string>)[c[0]] = c[1]),
                         {}
                     );
+
+                if (fields.payload_json) {
+                    let ended = false;
+                    try {
+                        Object.assign(
+                            req.body,
+                            JSON.parse(fields.payload_json[0])
+                        );
+                    } catch {
+                        res.status(400).json({
+                            message: 'Invalid `payload_json`'
+                        });
+                        ended = true;
+                    }
+                    if (ended) return;
+                }
 
                 for (const field of fileFields) {
                     const val = files[field];
