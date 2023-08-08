@@ -49,33 +49,41 @@ export function authenticate(required = false) {
     return async function (req: Request, res: Response, next: NextFunction) {
         if (req.user) return next();
         if (req.headers.authorization) {
-            // passed from the frontend in the Authorization header
-            const idToken = req.headers.authorization?.split(' ')[1];
+            if (process.env.NODE_ENV !== 'development') {
+                // passed from the frontend in the Authorization header
+                const idToken = req.headers.authorization?.split(' ')[1];
 
-            // Get the JWK set used to sign the JWT issued by Web3Auth
-            let jwks;
-            try {
-                jwks = await createRemoteJWKSet(getJWKSetURL(req));
-            } catch (e) {
-                res.status(400).json({
-                    message:
-                        'Unrecognized X-Auth-Method Header. Please use one of "Social" or "Wallet"',
-                    provided: req.headers['x-auth-method']
+                // Get the JWK set used to sign the JWT issued by Web3Auth
+                let jwks;
+                try {
+                    jwks = await createRemoteJWKSet(getJWKSetURL(req));
+                } catch (e) {
+                    res.status(400).json({
+                        message:
+                            'Unrecognized X-Auth-Method Header. Please use one of "Social" or "Wallet"',
+                        provided: req.headers['x-auth-method']
+                    });
+                }
+                if (!jwks) return;
+
+                // Verify the JWT using Web3Auth's JWKS
+                const jwtDecoded = await jwtVerify(idToken, jwks, {
+                    algorithms: ['ES256']
                 });
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const wallet = (jwtDecoded.payload as any).wallets[0];
+
+                req.user =
+                    (await User.findByAuth(
+                        (wallet.address.toUpperCase() ||
+                            wallet.public_key) as string
+                    )) ?? undefined;
+            } else {
+                const userId = req.headers.authorization?.split(' ')[1]; // Bearer <userId>
+                req.user =
+                    (await User.findOne({ _id: { $eq: userId } })) ?? undefined;
             }
-            if (!jwks) return;
-
-            // Verify the JWT using Web3Auth's JWKS
-            const jwtDecoded = await jwtVerify(idToken, jwks, {
-                algorithms: ['ES256']
-            });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const wallet = (jwtDecoded.payload as any).wallets[0];
-
-            req.user = await User.findByAuth(
-                (wallet.address.toUpperCase() || wallet.public_key) as string
-            );
         }
 
         if (!req.user && required) return res.status(401).end();
