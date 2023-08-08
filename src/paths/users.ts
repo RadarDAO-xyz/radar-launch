@@ -3,12 +3,10 @@ import { create, del, prefetch, read, readMany, update } from '../util/crud';
 import User from '../models/User';
 import { authenticate } from '../util/auth';
 import Project, { ProjectStatus } from '../models/Project';
-import formidable from 'formidable';
-import { createReadStream } from 'fs';
-import { ImgurClient } from 'imgur';
 import UserVote from '../models/UserVote';
 import rl from '../ratelimit';
 import { isValidObjectId } from 'mongoose';
+import { imageUpload } from '../util/upload';
 
 const UsersRouter = Router();
 
@@ -73,43 +71,7 @@ UsersRouter.use(authenticate(true)); // Mandatory Authentication
 UsersRouter.patch(
     '/:id',
     rl('UserUpdate', 60, 5),
-    (req, res, next) => {
-        if (req.headers['content-type']?.startsWith('multipart/form-data')) {
-            const form = formidable({
-                maxFileSize: 10 * 1024 * 1024
-            });
-
-            form.parse(req, async (err, fields, files) => {
-                if (err) return res.status(400);
-
-                // Prepare fields for the next patch handler
-                req.body = {
-                    name: fields.name?.[0],
-                    bio: fields.bio?.[0],
-                    socials: fields.socials?.[0],
-                    email: fields.email?.[0]
-                };
-
-                // If profile file is present, upload file to imgur and set link as profile
-                if (Array.isArray(files.profile)) {
-                    const client = new ImgurClient({
-                        clientId: process.env.IMGUR_CLIENT_ID
-                    });
-                    const resp = await client.upload({
-                        image: createReadStream(
-                            files.profile[0]?.filepath
-                        ) as unknown as ReadableStream,
-                        type: 'stream'
-                    });
-                    req.body.profile = resp.data.link; // Prepare field for the next patch handler
-                }
-                next();
-            });
-        } else {
-            delete req.body.profile; // Remove any manual links from being set (must be upload via the API to imgur)
-            next();
-        }
-    },
+    imageUpload('profile', ['name', 'bio', 'socials', 'email']),
     update(User, (req) => req.user?._id.toString() === req.params.id, {
         allowedFields: ['name', 'profile', 'bio', 'socials', 'email']
     })
