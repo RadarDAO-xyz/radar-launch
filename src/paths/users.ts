@@ -71,7 +71,7 @@ UsersRouter.use(authenticate(true)); // Mandatory Authentication
 UsersRouter.patch(
     '/:id',
     rl('UserUpdate', 60, 5),
-    imageUpload('profile', ['name', 'bio', 'socials', 'email']),
+    imageUpload('profile'),
     update(User, (req) => req.user?._id.toString() === req.params.id, {
         allowedFields: ['name', 'profile', 'bio', 'socials', 'email']
     })

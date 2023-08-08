@@ -9,17 +9,14 @@ const Imgur = new ImgurClient({
 
 export function imageUpload(
     fileField: string,
-    otherFields: string[],
     options?: formidable.Options
 ): Handler;
 export function imageUpload(
     fileFields: string[],
-    otherFields: string[],
     options?: formidable.Options
 ): Handler;
 export function imageUpload(
     fileFields: string | string[],
-    otherFields: string[],
     options?: formidable.Options
 ) {
     if (typeof fileFields === 'string') fileFields = [fileFields];
@@ -34,7 +31,7 @@ export function imageUpload(
                 if (err) return res.status(400);
 
                 // Prepare fields for the next handler
-                req.body = otherFields
+                req.body = Object.keys(fields)
                     .map((x) => [x, fields[x]?.[0]])
                     .filter((x) => x[1])
                     .reduce(
