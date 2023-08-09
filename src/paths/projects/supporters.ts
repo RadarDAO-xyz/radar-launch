@@ -15,7 +15,13 @@ ProjectsSupportersRouter.post(
         req.body.project = req.doc?._id;
         next();
     },
-    create(ProjectSupporter)
+    create(ProjectSupporter, () => true, true),
+    // Update the project's supporter count and return the project in the body
+    async (req, res) => {
+        if (req.doc) req.doc.supporter_count += 1;
+        await req.doc?.save();
+        res.json(req.result?.toJSON()).end();
+    }
 );
 
 ProjectsSupportersRouter.use(authenticate(true));
