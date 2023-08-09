@@ -10,7 +10,8 @@
     "dev": "BASE_URL=launch NODE_ENV=development ts-node src/index.ts",
     "build": "tsc",
     "prepare": "husky install",
-    "fix-project-counts": "ts-node ./scripts/fix-counts.ts"
+    "fix-project-counts": "ts-node ./scripts/fix-counts.ts",
+    "clean-project-children": "ts-node ./scripts/clean-project-children.ts"
   },
   "author": "mrTomatolegit",
   "license": "MIT",
