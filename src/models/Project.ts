@@ -1,5 +1,8 @@
 import { Schema, model, Types } from 'mongoose';
 import { retrieveVideoThumbnail } from '../util/regex';
+import ProjectSupporter from './ProjectSupporter';
+import ProjectUpdate from './ProjectUpdate';
+import UserVote from './UserVote';
 
 export enum ProjectStatus {
     'In Review',
@@ -156,6 +159,19 @@ const projectSchema = new Schema<IProject>(
         )
     },
     { timestamps: true, toJSON: { getters: true } }
+);
+
+projectSchema.post(
+    'deleteOne',
+    { query: false, document: true, errorHandler: false },
+    async function () {
+        const s = { project: this._id };
+        await Promise.all([
+            ProjectSupporter.deleteMany(s),
+            ProjectUpdate.deleteMany(s),
+            UserVote.deleteMany(s)
+        ]);
+    }
 );
 
 const Project = model<IProject>('Project', projectSchema, 'projects');
