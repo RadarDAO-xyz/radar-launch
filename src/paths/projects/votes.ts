@@ -43,7 +43,7 @@ ProjectsVotesRouter.delete('/', async (req, res) => {
 
     if (result.deletedCount > 0) {
         if (req.doc) req.doc.vote_count -= 1; // Change the Project's vote_count
-        await req.doc?.save();
+        await req.doc?.save({ validateModifiedOnly: true });
         res.status(204).end();
     } else {
         res.status(404).end();

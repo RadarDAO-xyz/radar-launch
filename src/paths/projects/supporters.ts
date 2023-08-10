@@ -19,7 +19,7 @@ ProjectsSupportersRouter.post(
     // Update the project's supporter count and return the project in the body
     async (req, res) => {
         if (req.doc) req.doc.supporter_count += 1;
-        await req.doc?.save();
+        await req.doc?.save({ validateModifiedOnly: true });
         res.json(req.result?.toJSON()).end();
     }
 );
