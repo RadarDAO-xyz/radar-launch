@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document, Types, isValidObjectId } from 'mongoose';
 import User, { IUser } from '../models/User';
 import { NextFunction, Request, Response } from 'express';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
@@ -49,10 +49,15 @@ export function authenticate(required = false) {
     return async function (req: Request, res: Response, next: NextFunction) {
         if (req.user) return next();
         if (req.headers.authorization) {
-            if (process.env.NODE_ENV !== 'development') {
-                // passed from the frontend in the Authorization header
-                const idToken = req.headers.authorization?.split(' ')[1];
-
+            const idToken = req.headers.authorization?.split(' ')[1];
+            if (
+                process.env.NODE_ENV === 'development' && // If it's a local dev version, and supplied bearer is an ObjectId, use fake login
+                isValidObjectId(idToken)
+            ) {
+                req.user =
+                    (await User.findOne({ _id: { $eq: idToken } })) ??
+                    undefined;
+            } else {
                 // Get the JWK set used to sign the JWT issued by Web3Auth
                 let jwks;
                 try {
@@ -79,10 +84,6 @@ export function authenticate(required = false) {
                         (wallet.address.toUpperCase() ||
                             wallet.public_key) as string
                     )) ?? undefined;
-            } else {
-                const userId = req.headers.authorization?.split(' ')[1]; // Bearer <userId>
-                req.user =
-                    (await User.findOne({ _id: { $eq: userId } })) ?? undefined;
             }
         }
 
