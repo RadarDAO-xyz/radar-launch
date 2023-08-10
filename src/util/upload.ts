@@ -31,15 +31,11 @@ export function imageUpload(
                 if (err) return res.status(400);
 
                 // Prepare fields for the next handler
-                req.body = Object.keys(fields)
-                    .map((x) => [x, fields[x]?.[0]])
-                    .filter((x) => x[1] && x[0] !== 'payload_json')
-                    .reduce(
-                        (p, c) => ((p as Record<string, string>)[c[0]] = c[1]),
-                        {}
-                    );
+                Object.keys(fields)
+                    .filter((x) => x !== 'payload_json')
+                    .forEach((k) => (req.body[k] = fields[k][0]));
 
-                if (fields.payload_json) {
+                if ('payload_json' in fields) {
                     let ended = false;
                     try {
                         Object.assign(
