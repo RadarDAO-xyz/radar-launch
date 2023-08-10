@@ -27,7 +27,7 @@ export interface IProject {
     team: { name: string; bio?: string; email: string }[];
     collaborators?: string;
     waitlist: boolean;
-    milestones: { amount: number; text: string }[];
+    milestones: { amount: string; text: string }[];
     edition_price: number;
     mint_end_date: string; // ISO Datestring
     benefits: { amount: number; text: string }[];
@@ -104,7 +104,7 @@ const projectSchema = new Schema<IProject>(
         milestones: [
             new Schema(
                 {
-                    amount: { type: Number, required: true },
+                    amount: { type: String, required: true },
                     text: { type: String, required: true }
                 },
                 { _id: false }
