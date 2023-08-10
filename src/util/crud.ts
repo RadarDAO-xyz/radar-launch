@@ -94,24 +94,25 @@ export function create(
 
         const doc = await model.create(docData).catch((r: any) => {
             if (r.name === 'ValidationError') {
-                return res
-                    .status(400)
+                res.status(400)
                     .json({
                         error: r.name,
                         message: r.message
                     })
                     .end();
-            } else if (r.name === 'MongoServerError') {
-                if ((model as any).handlers[r.code]) {
-                    return (model as any).handlers[r.code](r, req, res, next);
-                }
+            } else if (
+                r.name === 'MongoServerError' &&
+                (model as any).handlers[r.code]
+            ) {
+                (model as any).handlers[r.code](r, req, res, next);
+            } else {
+                res.status(500).end();
             }
-            res.status(500).end();
         });
         if (!doc) return;
 
         if (doNext) {
-            req.result = doc.toJSON();
+            req.result = doc;
             next();
         } else {
             res.json(doc.toJSON()).end();
