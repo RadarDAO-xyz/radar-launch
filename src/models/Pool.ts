@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 export type Sponsor = {
     logo?: string;
+    link?: string;
     name: string;
     contribution: number;
 };
@@ -41,6 +42,9 @@ const poolSchema = new Schema<IPool>(
             new Schema(
                 {
                     logo: {
+                        type: String
+                    },
+                    link: {
                         type: String
                     },
                     name: {
