@@ -39,7 +39,7 @@ ProjectsSupportersRouter.get(
 );
 
 ProjectsSupportersRouter.get('/csv', async (req, res) => {
-    if (req.user?._id !== req.doc?.founder) return res.status(403).end();
+    if (req.user?._id.toString() !== req.doc?.founder.toString()) return res.status(403).end();
     const supporters = await ProjectSupporter.find(
         'signups' in req.query
             ? { type: 0 }
