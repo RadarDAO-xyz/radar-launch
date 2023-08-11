@@ -65,7 +65,10 @@ userSchema.method('toJSON', function () {
         name: this.name,
         profile: this.profile,
         bio: this.bio,
-        socials: this.socials
+        socials: this.socials,
+        wallets: this.wallets
+            .map((w: WalletResolvable) => w.address)
+            .filter((x: string | undefined) => x)
     };
 });
 
