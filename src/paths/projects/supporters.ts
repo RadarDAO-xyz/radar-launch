@@ -30,22 +30,29 @@ ProjectsSupportersRouter.get(
     '/',
     readMany(ProjectSupporter, (req) => req.user?._id === req.doc?.founder, {
         filter: (req) =>
+            Object.assign(
+                { project: { $eq: req.doc?._id } },
+                'signups' in req.query
+                    ? { type: 0 }
+                    : 'contributors' in req.query
+                    ? { type: 1 }
+                    : {}
+            )
+    })
+);
+
+ProjectsSupportersRouter.get('/csv', async (req, res) => {
+    if (req.user?._id.toString() !== req.doc?.founder.toString())
+        return res.status(403).end();
+    const supporters = await ProjectSupporter.find(
+        Object.assign(
+            { project: { $eq: req.doc?._id } },
             'signups' in req.query
                 ? { type: 0 }
                 : 'contributors' in req.query
                 ? { type: 1 }
                 : {}
-    })
-);
-
-ProjectsSupportersRouter.get('/csv', async (req, res) => {
-    if (req.user?._id.toString() !== req.doc?.founder.toString()) return res.status(403).end();
-    const supporters = await ProjectSupporter.find(
-        'signups' in req.query
-            ? { type: 0 }
-            : 'contributors' in req.query
-            ? { type: 1 }
-            : {}
+        )
     ).then((a) =>
         a.map((x) => ({ ...x.toObject(), type: ProjectSupporterType[x.type] }))
     );
