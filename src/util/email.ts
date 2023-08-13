@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
 import { ProjectDocument } from '../models/Project';
+import { readFileSync } from 'fs';
+import path from 'path';
 
 const mailTransporter = nodemailer.createTransport({
     service: 'gmail',
@@ -9,6 +11,23 @@ const mailTransporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     }
 });
+
+const BaseEmailTemplate = readFileSync(
+    path.join(__dirname, '../../templates/email.html'),
+    'utf8'
+);
+const formatBaseEmailTemplate = ({
+    header,
+    body
+}: {
+    header: string;
+    body: string;
+}) => {
+    return BaseEmailTemplate.replace(/\$HEADER/g, header).replace(
+        /\$BODY/g,
+        body
+    );
+};
 
 export const EmailTemplates = {
     _base: (project: ProjectDocument): Mail.Options => {
@@ -19,24 +38,37 @@ export const EmailTemplates = {
     CREATED: (project: ProjectDocument): Mail.Options => {
         return {
             ...EmailTemplates._base(project),
-            subject: 'Your project has been submitted',
-            text: `Your project ${project.title} has been submitted and is under approval by RADAR`
+            subject: `Project Submitted: ${project.title}`,
+            html: formatBaseEmailTemplate({
+                header: `Project Submitted: ${project.title}`,
+                body: `This is to notify you that your project with title <strong>"${
+                    project.title
+                }"</strong> has been submitted and is under review by the RADAR Team.<br />Once the project is approved you will be able to launch it.<br /><br />You can view the project page here:<a href="${project.getUrl()}">${project.getUrl()}</a>`
+            })
         };
     },
     APPROVED: (project: ProjectDocument): Mail.Options => {
         return {
             ...EmailTemplates._base(project),
-            subject: 'Your project has been approved',
-            text: `Your project ${project.title} has been approved and is ready to be published and go live`
+            subject: `Project Approved: ${project.title}`,
+            html: formatBaseEmailTemplate({
+                header: `Project Approved: ${project.title}`,
+                body: `This is to notify you that your project with title <strong>"${
+                    project.title
+                }"</strong> has been approved.<br />You can now launch the project on the website.<br /><br />You can view the project page here: <a href="${project.getUrl()}">${project.getUrl()}</a>`
+            })
         };
     },
     LAUNCHED: (project: ProjectDocument): Mail.Options => {
         return {
             ...EmailTemplates._base(project),
-            subject: 'Your project has been launched',
-            text: `Your project ${
-                project.title
-            } has been launched you can view it at ${project.getUrl()}`
+            subject: `Project Launched: ${project.title}`,
+            html: formatBaseEmailTemplate({
+                header: `Project Launched: ${project.title}`,
+                body: `This is to notify you that your project with title <strong>"${
+                    project.title
+                }"</strong> has been launched.<br />You should be able to view it on public pages!<br /><br />You can view the project page here: <a href="${project.getUrl()}">${project.getUrl()}</a>`
+            })
         };
     }
 };
