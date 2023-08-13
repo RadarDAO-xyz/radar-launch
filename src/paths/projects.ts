@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Types } from 'mongoose';
-import Project from '../models/Project';
+import Project, { ProjectDocument } from '../models/Project';
 import rl from '../ratelimit';
 import { authenticate } from '../util/auth';
 import { create, del, prefetch, read, readMany, update } from '../util/crud';
@@ -8,6 +8,7 @@ import ProjectsSupportersRouter from './projects/supporters';
 import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
 import { imageUpload } from '../util/upload';
+import { EmailTemplates, sendMail } from '../util/email';
 
 const ProjectsRouter = Router();
 
@@ -43,7 +44,14 @@ ProjectsRouter.post(
             ?._id as Types.ObjectId;
         next();
     },
-    create(Project)
+    create(Project, () => true, true),
+    async (req, res) => {
+        const project = req.result as ProjectDocument | undefined;
+        if (!project) return res.status(500).end();
+        res.json(project).end();
+        // Send emails (separate thread)
+        sendMail(EmailTemplates.CREATED(project));
+    }
 );
 
 const allowedSwitches = {
@@ -59,21 +67,35 @@ ProjectsRouter.patch(
     imageUpload('thumbnail'),
     async (req, res, next) => {
         // Status modifier
-        if (!req.body.status) return next();
+        const nextStatus = req.body.status;
+        if (!nextStatus) return next();
 
-        if (req.doc?.founder.toString() !== req.user?._id.toString())
+        const project = req.doc as ProjectDocument;
+        if (!project) return res.status(404).end();
+
+        const oldStatus = project?.status as number;
+
+        if (project.founder.toString() !== req.user?._id.toString())
             return res.status(403).end();
-        if (!req.doc) return;
 
-        if (!canSwitch(req.doc?.status, req.body.status))
+        if (!canSwitch(oldStatus, nextStatus) && !req.bypass)
             return res.status(400).end();
 
-        if (req.doc.status === 1 && req.body.status === 2)
-            req.doc.launched_at = new Date().toISOString();
+        if (oldStatus === 0 && nextStatus === 1) {
+            // Being approved
+            // Send emails out (separate thread)
+            sendMail(EmailTemplates.APPROVED(project));
+        }
 
-        req.doc.status = req.body.status;
-        await req.doc.save();
-        return res.json(req.doc).end();
+        if (oldStatus === 1 && nextStatus === 2) {
+            // Going live
+            project.launched_at = new Date().toISOString();
+            // Send emails out (separate thread)
+            sendMail(EmailTemplates.LAUNCHED(project));
+        }
+
+        project.status = nextStatus;
+        next();
     },
     update(
         Project,

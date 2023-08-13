@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-export {};
-
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -11,6 +9,9 @@ declare global {
             BASE_URL?: string;
             MONGO_URL: string;
             IMGUR_CLIENT_ID: string;
+            EMAIL_PASS: string;
         }
     }
 }
+
+export type ArrayType<T> = T extends (infer Item)[] ? Item : T;

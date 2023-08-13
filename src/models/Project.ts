@@ -1,8 +1,9 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types, Model, HydratedDocument } from 'mongoose';
 import { retrieveVideoThumbnail } from '../util/regex';
 import ProjectSupporter from './ProjectSupporter';
 import ProjectUpdate from './ProjectUpdate';
 import UserVote from './UserVote';
+import { ArrayType } from '../globals';
 
 export enum ProjectStatus {
     'In Review',
@@ -42,7 +43,16 @@ export interface IProject {
     };
 }
 
-const projectSchema = new Schema<IProject>(
+export interface IProjectMethods {
+    getUrl(): string;
+    getEmails(): string[];
+}
+
+// Create a new Model type that knows about IUserMethods...
+export type ProjectModel = Model<IProject, object, IProjectMethods>;
+export type ProjectDocument = HydratedDocument<IProject, IProjectMethods>;
+
+const projectSchema = new Schema<IProject, ProjectModel, IProjectMethods>(
     {
         title: {
             type: String,
@@ -161,6 +171,14 @@ const projectSchema = new Schema<IProject>(
     { timestamps: true, toJSON: { getters: true } }
 );
 
+projectSchema.method('getUrl', function () {
+    return `https://radarlaunch.app/project/${this._id}`;
+});
+
+projectSchema.method('getEmails', function () {
+    return this.team.map((x: ArrayType<IProject['team']>) => x.email);
+});
+
 projectSchema.post(
     'deleteOne',
     { query: false, document: true, errorHandler: false },
@@ -174,6 +192,10 @@ projectSchema.post(
     }
 );
 
-const Project = model<IProject>('Project', projectSchema, 'projects');
+const Project = model<IProject, ProjectModel>(
+    'Project',
+    projectSchema,
+    'projects'
+);
 
 export default Project;

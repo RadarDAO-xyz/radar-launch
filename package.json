@@ -22,6 +22,7 @@
     "@types/jquery": "^3.5.16",
     "@types/memcached": "^2.2.7",
     "@types/node": "^20.3.2",
+    "@types/nodemailer": "^6.4.9",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.43.0",
@@ -45,6 +46,7 @@
     "json-2-csv": "^4.1.0",
     "memcached": "^2.2.2",
     "mongoose": "^7.3.1",
+    "nodemailer": "^6.9.4",
     "rate-limit-memcached": "^0.6.0"
   },
   "lint-staged": {
