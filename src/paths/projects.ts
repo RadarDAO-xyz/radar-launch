@@ -9,6 +9,7 @@ import ProjectsUpdatesRouter from './projects/updates';
 import ProjectsVotesRouter from './projects/votes';
 import { imageUpload } from '../util/upload';
 import { EmailTemplates, sendMail } from '../util/email';
+import User from '../models/User';
 
 const ProjectsRouter = Router();
 
@@ -40,8 +41,18 @@ ProjectsRouter.post(
     rl('ProjectCreate', 60, 5),
     imageUpload('thumbnail'),
     async (req, res, next) => {
-        (req.body as Record<string, Types.ObjectId>).founder = req.user
-            ?._id as Types.ObjectId;
+        if (!req.body.admin_address)
+            return res.status(400).json({
+                message: '`admin_address` does not match any user address',
+                provided: req.body.admin_address
+            });
+        const founder = await User.findByAuth(req.body.admin_address);
+        if (!founder)
+            return res.status(400).json({
+                message: '`admin_address` does not match any user address',
+                provided: req.body.admin_address
+            });
+        (req.body as Record<string, Types.ObjectId>).founder = founder._id;
         next();
     },
     create(Project, () => true, true),
