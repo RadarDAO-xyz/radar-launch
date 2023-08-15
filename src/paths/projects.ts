@@ -75,7 +75,10 @@ ProjectsRouter.patch(
 
         const oldStatus = project?.status as number;
 
-        if (project.founder.toString() !== req.user?._id.toString())
+        if (
+            project.founder.toString() !== req.user?._id.toString() &&
+            !req.bypass
+        )
             return res.status(403).end();
 
         if (!canSwitch(oldStatus, nextStatus) && !req.bypass)
