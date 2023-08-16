@@ -5,6 +5,7 @@ import ProjectSupporter, {
     ProjectSupporterType
 } from '../../models/ProjectSupporter';
 import { json2csv } from 'json-2-csv';
+import contentDisposition from 'content-disposition';
 
 const ProjectsSupportersRouter = Router();
 
@@ -42,7 +43,7 @@ ProjectsSupportersRouter.get(
 );
 
 ProjectsSupportersRouter.get('/csv', async (req, res) => {
-    if (req.user?._id.toString() !== req.doc?.founder.toString())
+    if (req.user?._id.toString() !== req.doc?.founder.toString() && !req.bypass)
         return res.status(403).end();
     const supporters = await ProjectSupporter.find(
         Object.assign(
@@ -63,10 +64,7 @@ ProjectsSupportersRouter.get('/csv', async (req, res) => {
     });
 
     res.set('Content-Type', 'text/csv');
-    res.set(
-        'Content-Disposition',
-        `inline; filename=${req.doc?.title} contributors.csv`
-    );
+    res.set('Content-Disposition', contentDisposition(req.doc?.title));
     res.send(Buffer.from(csv)).end();
 });
 
