@@ -43,15 +43,15 @@ ProjectsRouter.post(
     async (req, res, next) => {
         if (!req.body.admin_address)
             return res.status(400).json({
-                message: '`admin_address` does not match any user address',
+                message: '`admin_address` cannot be undefined',
                 provided: req.body.admin_address
             });
-        const founder = await User.findByAuth(req.body.admin_address);
-        if (!founder)
-            return res.status(400).json({
-                message: '`admin_address` does not match any user address',
-                provided: req.body.admin_address
+        let founder = await User.findByAuth(req.body.admin_address);
+        if (!founder) {
+            founder = await User.create({
+                wallets: [{ address: req.body.admin_address }]
             });
+        }
         (req.body as Record<string, Types.ObjectId>).founder = founder._id;
         next();
     },
