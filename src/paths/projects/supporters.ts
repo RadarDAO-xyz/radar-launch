@@ -43,7 +43,7 @@ ProjectsSupportersRouter.get(
 );
 
 ProjectsSupportersRouter.get('/csv', async (req, res) => {
-    if (req.user?._id.toString() !== req.doc?.founder.toString() && !req.bypass)
+    if (req.user?._id !== req.doc?.founder && !req.bypass)
         return res.status(403).end();
     const supporters = await ProjectSupporter.find(
         Object.assign(
