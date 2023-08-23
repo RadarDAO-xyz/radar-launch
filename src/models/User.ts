@@ -29,7 +29,10 @@ export interface IUser {
 
 interface UserModel extends Model<IUser> {
     findByAuth(idToken: string): Promise<HydratedDocument<IUser>> | null;
+    findManyByAuth(idTokens: string[]): Promise<HydratedDocument<IUser>[]> | [];
 }
+
+export type UserDocument = HydratedDocument<IUser>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const userSchema = new Schema<IUser, UserModel>(
@@ -89,6 +92,23 @@ userSchema.static('findByAuth', async function (tokenId: string) {
             {
                 'wallets.public_key': {
                     $eq: tokenId
+                }
+            }
+        ]
+    });
+});
+
+userSchema.static('findManyByAuth', async function (tokenIds: string[]) {
+    return User.find({
+        $or: [
+            {
+                'wallets.address': {
+                    $in: tokenIds.map((x) => x.toUpperCase())
+                }
+            },
+            {
+                'wallets.public_key': {
+                    $in: tokenIds.map((x) => x.toUpperCase())
                 }
             }
         ]

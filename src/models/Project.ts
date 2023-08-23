@@ -4,6 +4,12 @@ import ProjectSupporter from './ProjectSupporter';
 import ProjectUpdate from './ProjectUpdate';
 import UserVote from './UserVote';
 import { ArrayType } from '../globals';
+import {
+    AlchemyAPI,
+    ProjectContractAddress,
+    getEditions
+} from '../util/alchemy';
+import User, { UserDocument } from './User';
 
 export enum ProjectStatus {
     'In Review',
@@ -41,15 +47,19 @@ export interface IProject {
         start: string; // ISO Datestring
         end: string; // ISO Datestring
     };
+    nftTokenCache?: string;
 }
 
 export interface IProjectMethods {
     getUrl(): string;
     getEmails(): string[];
+    getNFTOwners(): Promise<(UserDocument | string)[]>;
 }
 
 // Create a new Model type that knows about IUserMethods...
-export type ProjectModel = Model<IProject, object, IProjectMethods>;
+export interface ProjectModel extends Model<IProject, object, IProjectMethods> {
+    cacheNFTTokens(): ReturnType<ProjectModel['bulkWrite']>;
+}
 export type ProjectDocument = HydratedDocument<IProject, IProjectMethods>;
 
 const projectSchema = new Schema<IProject, ProjectModel, IProjectMethods>(
@@ -166,7 +176,8 @@ const projectSchema = new Schema<IProject, ProjectModel, IProjectMethods>(
                 end: String // ISO Datestring
             },
             { _id: false }
-        )
+        ),
+        nftTokenCache: String
     },
     { timestamps: true, toJSON: { getters: true } }
 );
@@ -177,6 +188,34 @@ projectSchema.method('getUrl', function () {
 
 projectSchema.method('getEmails', function () {
     return this.team.map((x: ArrayType<IProject['team']>) => x.email);
+});
+
+projectSchema.method('getNFTOwners', async function () {
+    if (!this.nftTokenCache) return [];
+    const addresses = (await AlchemyAPI.nft
+        .getOwnersForNft(ProjectContractAddress, this.nftTokenCache)
+        .then((r) => r.owners)) as string[];
+    const users = await User.findManyByAuth(addresses);
+    return addresses.map(
+        (addr) =>
+            users.find((u) =>
+                u.wallets.find(
+                    (w) => w.address?.toLowerCase() === addr.toLowerCase()
+                )
+            ) ?? addr
+    ) as (UserDocument | string)[];
+});
+
+projectSchema.static('cacheNFTTokens', async function () {
+    const editions = await getEditions();
+    return Project.bulkWrite(
+        editions.map((x) => ({
+            updateOne: {
+                filter: { _id: new Types.ObjectId(x.id) },
+                update: { $set: { nftTokenCache: x.tokenId } }
+            }
+        }))
+    );
 });
 
 projectSchema.post(
