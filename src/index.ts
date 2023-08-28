@@ -3,7 +3,7 @@ import './util/logger';
 import { config } from 'dotenv';
 config();
 import express, { json } from 'express';
-import { connect } from 'mongoose';
+import { connect, connection } from 'mongoose';
 import { AddressInfo } from 'net';
 import Routes from './routes';
 import https from 'https';
@@ -12,6 +12,9 @@ import { readFileSync } from 'fs';
 import path from 'path';
 import cors from 'cors';
 import rl from './ratelimit';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import lusca from 'lusca';
 
 const app = express();
 app.disable('x-powered-by'); // Disable X-Powered-By: Express header
@@ -46,6 +49,41 @@ app.use(
         credentials: true
     })
 );
+
+app.use(
+    session({
+        secret: process.env.COOKIE_SECRET,
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            domain:
+                process.env.NODE_ENV !== 'development'
+                    ? 'radarlaunch.app'
+                    : 'localhost',
+            maxAge: 2 * 7 * 24 * 60 * 60, // 2 weeks
+            secure: process.env.NODE_ENV !== 'development'
+        },
+        store: new MongoStore({
+            client: connection.getClient(),
+            touchAfter: 24 * 3600,
+            crypto: {
+                secret: process.env.COOKIE_SECRET
+            }
+        })
+    })
+);
+
+app.use(
+    lusca({
+        csrf: true,
+        xframe: 'SAMEORIGIN',
+        hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+        xssProtection: true,
+        nosniff: true,
+        referrerPolicy: 'same-origin'
+    })
+);
+
 app.use(json()); // Parse JSON Body
 
 // Apply the Base URL if it was provided

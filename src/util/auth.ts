@@ -21,6 +21,12 @@ type User = Document<unknown, Record<string, never>, IUser> &
         never
     >;
 
+declare module 'express-session' {
+    interface SessionData {
+        userId: string;
+    }
+}
+
 /**
  * Gets the appropriate JWK Url depending on the auth method used on the frontend
  * @param req
@@ -85,6 +91,9 @@ export function authenticate(required = false) {
                             wallet.public_key) as string
                     )) ?? undefined;
             }
+            if (req.user) req.session.userId = req.user.id;
+        } else if (req.session.userId) {
+            req.user = (await User.findById(req.session.userId)) ?? undefined;
         }
 
         if (!req.user && required) return res.status(401).end();

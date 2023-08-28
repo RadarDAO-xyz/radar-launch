@@ -11,6 +11,7 @@ declare global {
             IMGUR_CLIENT_ID: string;
             EMAIL_PASS: string;
             ALCHEMY_KEY: string;
+            COOKIE_SECRET: string;
         }
     }
 }
