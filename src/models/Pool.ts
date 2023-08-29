@@ -36,7 +36,8 @@ const poolSchema = new Schema<IPool>(
             required: true
         },
         hero_image: {
-            type: String
+            type: String,
+            required: true
         },
         sponsors: [
             new Schema(
@@ -44,15 +45,20 @@ const poolSchema = new Schema<IPool>(
                     logo: {
                         type: String
                     },
-                    link: {
-                        type: String
+                    briefButtonLink: {
+                        type: String,
+                        required: true
+                    },
+                    eventButtonLink: {
+                        type: String,
+                        required: true
                     },
                     name: {
                         type: String,
                         required: true
                     },
                     contribution: {
-                        type: String,
+                        type: Number,
                         required: true
                     }
                 },
@@ -60,8 +66,7 @@ const poolSchema = new Schema<IPool>(
             )
         ],
         video: {
-            type: String,
-            required: true
+            type: String
         }
     },
     { timestamps: true }
