@@ -67,6 +67,7 @@ VerifyRouter.post('/', rl('Verify', 60, 5), async (req, res) => {
             existingUser = await User.create({
                 wallets: [wallet]
             });
+        req.session.userId = existingUser.id;
         res.status(200).json({ name: 'Verification Successful' });
     } else {
         res.status(400).json({ name: 'Verification Failed' });
