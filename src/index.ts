@@ -3,7 +3,7 @@ import './util/logger';
 import { config } from 'dotenv';
 config();
 import express, { json } from 'express';
-import { connect, connection } from 'mongoose';
+import mongoose, { connect, connection } from 'mongoose';
 import { AddressInfo } from 'net';
 import Routes from './routes';
 import https from 'https';
@@ -50,6 +50,9 @@ app.use(
     })
 );
 
+let resolveMongooseClient: (
+    value: mongoose.mongo.MongoClient | PromiseLike<mongoose.mongo.MongoClient>
+) => void;
 app.use(
     session({
         secret: process.env.COOKIE_SECRET,
@@ -58,13 +61,14 @@ app.use(
         cookie: {
             domain:
                 process.env.NODE_ENV !== 'development'
-                    ? 'radarlaunch.app'
+                    ? 'api.radardao.xyz'
                     : 'localhost',
             maxAge: 2 * 7 * 24 * 60 * 60, // 2 weeks
-            secure: process.env.NODE_ENV !== 'development'
+            secure: process.env.NODE_ENV !== 'development',
+            httpOnly: false
         },
         store: new MongoStore({
-            client: connection.getClient(),
+            clientPromise: new Promise((res) => (resolveMongooseClient = res)),
             touchAfter: 24 * 3600,
             crypto: {
                 secret: process.env.COOKIE_SECRET
@@ -90,7 +94,10 @@ app.use(json()); // Parse JSON Body
 app.use('/' + (process.env.BASE_URL ?? ''), Routes);
 
 // Connect to MongoDB
-connect(process.env.MONGO_URL).then(() => console.info('MongoDB connected'));
+connect(process.env.MONGO_URL).then(() => {
+    resolveMongooseClient(connection.getClient());
+    console.info('MongoDB connected');
+});
 
 function hostHttp(port: number | string) {
     const server = app.listen(port, () => {
