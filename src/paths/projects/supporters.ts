@@ -30,7 +30,7 @@ ProjectsSupportersRouter.post(
 
 ProjectsSupportersRouter.get(
     '/believers',
-    rl('ProjectSupportersBelieversFetch', 30, 5),
+    rl('ProjectSupportersFetch', 30, 15),
     readMany(ProjectSupporter, () => true, {
         filter: (req) => ({ project: { $eq: req.doc?._id }, type: 2 })
     })
