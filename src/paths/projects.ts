@@ -46,10 +46,19 @@ ProjectsRouter.post(
                 message: '`admin_address` cannot be undefined',
                 provided: req.body.admin_address
             });
+        if (req.body.team.length < 1) {
+            return res.status(400).json({
+                message: '`team` must have at least 1 member',
+                provided: req.body.team
+            });
+        }
         let founder = await User.findByAuth(req.body.admin_address);
         if (!founder) {
             founder = await User.create({
-                wallets: [{ address: req.body.admin_address }]
+                wallets: [{ address: req.body.admin_address }],
+                name: req.body.team[0].name,
+                bio: req.body.team[0].bio,
+                email: req.body.team[0].email
             });
         }
         (req.body as Record<string, Types.ObjectId>).founder = founder._id;
