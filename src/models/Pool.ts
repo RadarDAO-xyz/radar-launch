@@ -16,6 +16,7 @@ export interface IPool {
     hero_image?: string;
     sponsors: Sponsor[];
     video?: string;
+    is_hidden: boolean;
 }
 
 const poolSchema = new Schema<IPool>(
@@ -68,6 +69,10 @@ const poolSchema = new Schema<IPool>(
         ],
         video: {
             type: String
+        },
+        is_hidden: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }
