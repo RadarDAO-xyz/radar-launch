@@ -3,16 +3,20 @@ import { Model, ObjectId, Schema, model } from 'mongoose';
 
 export enum ProjectSupporterType {
     Signup,
-    Contribution
+    Contribution,
+    Believer
 }
 
 export interface IProjectSupporter {
     project: ObjectId;
     type: ProjectSupporterType;
     email: string;
-    social: this['type'] extends 0 ? undefined : string;
-    skillset: this['type'] extends 0 ? undefined : string;
-    contribution: this['type'] extends 0 ? undefined : string;
+    social: this['type'] extends 1 ? string : undefined;
+    skillset: this['type'] extends 1 ? string : undefined;
+    contribution: this['type'] extends 1 ? string : undefined;
+    signatureHash: this['type'] extends 2 ? string : undefined;
+    signedMessage: this['type'] extends 2 ? string : undefined;
+    signingAddress: this['type'] extends 2 ? string : undefined;
 }
 
 type ErrorHandlerFunction = (
@@ -72,6 +76,30 @@ const projectSupporterSchema = new Schema<
             },
             validate: function () {
                 return (this as unknown as IProjectSupporter).type !== 0;
+            }
+        },
+        signatureHash: {
+            type: String,
+            required: function () {
+                return (this as unknown as IProjectSupporter).type === 2;
+            },
+            validate: function () {
+                return (this as unknown as IProjectSupporter).type === 2;
+            }
+        },
+        signedMessage: {
+            type: String,
+            required: function () {
+                return (this as unknown as IProjectSupporter).type === 2;
+            },
+            validate: function () {
+                return (this as unknown as IProjectSupporter).type === 2;
+            }
+        },
+        signingAddress: {
+            type: String,
+            validate: function () {
+                return (this as unknown as IProjectSupporter).type === 2;
             }
         }
     },
