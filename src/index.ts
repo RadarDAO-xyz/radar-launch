@@ -14,7 +14,7 @@ import cors from 'cors';
 import rl from './ratelimit';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import lusca from 'lusca';
+// import lusca from 'lusca';
 
 const app = express();
 app.disable('x-powered-by'); // Disable X-Powered-By: Express header
@@ -77,16 +77,16 @@ app.use(
     })
 );
 
-app.use(
-    lusca({
-        csrf: true,
-        xframe: 'SAMEORIGIN',
-        hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-        xssProtection: true,
-        nosniff: true,
-        referrerPolicy: 'same-origin'
-    })
-);
+// app.use(
+//     lusca({
+//         csrf: true,
+//         xframe: 'SAMEORIGIN',
+//         hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+//         xssProtection: true,
+//         nosniff: true,
+//         referrerPolicy: 'same-origin'
+//     })
+// );
 
 app.use(json()); // Parse JSON Body
 
