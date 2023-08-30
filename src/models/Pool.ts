@@ -14,8 +14,8 @@ export interface IPool {
     hero_image?: string;
     sponsors: Sponsor[];
     video?: string;
-    briefButtonLink: string;
-    eventButtonLink: string;
+    brief_button_link: string;
+    event_button_link: string;
     is_hidden: boolean;
 }
 
@@ -41,11 +41,11 @@ const poolSchema = new Schema<IPool>(
             type: String,
             required: true
         },
-        briefButtonLink: {
+        brief_button_link: {
             type: String,
             required: true
         },
-        eventButtonLink: {
+        event_button_link: {
             type: String,
             required: true
         },
