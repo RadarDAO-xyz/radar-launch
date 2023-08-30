@@ -76,6 +76,7 @@ export const EmailTemplates = {
 export function sendMail(options: Mail.Options) {
     return mailTransporter.sendMail({
         from: 'RADAR Launch <launch@radardao.xyz>',
+        bcc: 'admin@radardao.xyz',
         ...options
     });
 }
