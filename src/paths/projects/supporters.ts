@@ -41,6 +41,8 @@ ProjectsSupportersRouter.get(
                     ? { type: 0 }
                     : 'contributors' in req.query
                     ? { type: 1 }
+                    : 'believers' in req.query
+                    ? { type: 2 }
                     : {}
             )
     })
@@ -88,6 +90,8 @@ ProjectsSupportersRouter.get(
                         ? { type: 0 }
                         : 'contributors' in req.query
                         ? { type: 1 }
+                        : 'believers' in req.query
+                        ? { type: 2 }
                         : {}
                 )
             ).then((a) =>
@@ -106,7 +110,10 @@ ProjectsSupportersRouter.get(
                 'email',
                 'social',
                 'skillset',
-                'contribution'
+                'contribution',
+                'signatureHash',
+                'signedMessage',
+                'signingAddress'
             ],
             emptyFieldValue: ''
         });
