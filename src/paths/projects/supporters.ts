@@ -28,6 +28,14 @@ ProjectsSupportersRouter.post(
     }
 );
 
+ProjectsSupportersRouter.get(
+    '/believers',
+    rl('ProjectSupportersBelieversFetch', 30, 5),
+    readMany(ProjectSupporter, () => true, {
+        filter: (req) => ({ project: { $eq: req.doc?._id }, type: 2 })
+    })
+);
+
 ProjectsSupportersRouter.use(authenticate(true));
 
 ProjectsSupportersRouter.get(
