@@ -45,11 +45,16 @@ const projectSupporterSchema = new Schema<
         type: {
             type: Number,
             required: true,
-            enum: [0, 1]
+            enum: [0, 1, 2]
         },
         email: {
             type: String,
-            required: true
+            required: function () {
+                return (
+                    (this as unknown as IProjectSupporter).type === 0 ||
+                    (this as unknown as IProjectSupporter).type === 1
+                );
+            }
         },
         social: {
             type: String,
