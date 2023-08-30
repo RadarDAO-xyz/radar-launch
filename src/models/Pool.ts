@@ -2,7 +2,8 @@ import { Schema, model } from 'mongoose';
 
 export type Sponsor = {
     logo?: string;
-    link?: string;
+    briefButtonLink: string;
+    eventButtonLink: string;
     name: string;
     contribution: number;
 };
@@ -14,7 +15,7 @@ export interface IPool {
     pool_amount: number;
     hero_image?: string;
     sponsors: Sponsor[];
-    video: string;
+    video?: string;
 }
 
 const poolSchema = new Schema<IPool>(
