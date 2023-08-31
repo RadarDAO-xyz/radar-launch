@@ -69,3 +69,16 @@ export async function getEditions(): Promise<Edition[]> {
         id: v[4] as string
     }));
 }
+
+export async function getLogs() {
+    const beliefs = await AlchemyAPI.core.getLogs({
+        address: ProjectContractAddress,
+        fromBlock: '0x67e66a1',
+        topics: [
+            '0x7b0cc96a1f808bdffcbf4db4feace8d84ce12e38a462ef7abf3fce622378472c',
+            null,
+            '0x0000000000000000000000000000000000000000000000000000000000000007'
+        ]
+    });
+    return beliefs;
+}

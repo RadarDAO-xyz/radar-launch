@@ -8,6 +8,7 @@ import { json2csv } from 'json-2-csv';
 import contentDisposition from 'content-disposition';
 import rl from '../../ratelimit';
 import Project, { ProjectDocument } from '../../models/Project';
+import { getLogs } from '../../util/alchemy';
 
 const ProjectsSupportersRouter = Router();
 
@@ -31,9 +32,9 @@ ProjectsSupportersRouter.post(
 ProjectsSupportersRouter.get(
     '/believers',
     rl('ProjectSupportersFetch', 30, 15),
-    readMany(ProjectSupporter, () => true, {
-        filter: (req) => ({ project: { $eq: req.doc?._id }, type: 2 })
-    })
+    async (req, res) => {
+        res.json(await getLogs()).end();
+    }
 );
 
 ProjectsSupportersRouter.use(authenticate(true));
