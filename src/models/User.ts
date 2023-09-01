@@ -40,7 +40,12 @@ const userSchema = new Schema<IUser, UserModel>(
         name: {
             type: String,
             required: true,
-            default: 'Your name'
+            default: function () {
+                return (
+                    (this as UserDocument).wallets.find((w) => w.address)
+                        ?.address || 'Your name'
+                );
+            }
         },
         profile: String,
         bio: String,
