@@ -1,7 +1,6 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
 
-process.env.ALCHEMY_KEY = 'SfD9OfK6DQ79QHzPZW_0RWQaLFs7qGXv';
 // Optional config object, but defaults to the API key 'demo' and Network 'eth-mainnet'.
 const settings = {
     apiKey: process.env.ALCHEMY_KEY, // Replace with your Alchemy API key.
