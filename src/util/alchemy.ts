@@ -1,5 +1,7 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
+import { createPublicClient, http } from 'viem';
+import { optimism } from 'viem/chains';
 
 // Optional config object, but defaults to the API key 'demo' and Network 'eth-mainnet'.
 const settings = {
@@ -69,15 +71,51 @@ export async function getEditions(): Promise<Edition[]> {
     }));
 }
 
-export async function getLogs() {
-    const beliefs = await AlchemyAPI.core.getLogs({
+const publicClient = createPublicClient({ chain: optimism, transport: http() });
+
+export async function getLogs(editionId: number) {
+    return publicClient.getLogs({
         address: ProjectContractAddress,
-        fromBlock: '0x67e66a1',
-        topics: [
-            '0x7b0cc96a1f808bdffcbf4db4feace8d84ce12e38a462ef7abf3fce622378472c',
-            null,
-            '0x0000000000000000000000000000000000000000000000000000000000000007'
-        ]
+        args: {
+            editionId: BigInt(editionId || 0)
+        },
+        event: {
+            type: 'event',
+            anonymous: false,
+            inputs: [
+                {
+                    name: 'believer',
+                    internalType: 'address',
+                    type: 'address',
+                    indexed: true
+                },
+                {
+                    name: 'editionId',
+                    internalType: 'uint256',
+                    type: 'uint256',
+                    indexed: true
+                },
+                {
+                    name: 'hashOne',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                },
+                {
+                    name: 'hashTwo',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                },
+                {
+                    name: 'hashThree',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                }
+            ],
+            name: 'EditionBelieved'
+        },
+        fromBlock: 108947105n
     });
-    return beliefs;
 }

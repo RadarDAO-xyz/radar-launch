@@ -3,8 +3,7 @@ import { Model, ObjectId, Schema, model } from 'mongoose';
 
 export enum ProjectSupporterType {
     Signup,
-    Contribution,
-    Believer
+    Contribution
 }
 
 export interface IProjectSupporter {
@@ -81,30 +80,6 @@ const projectSupporterSchema = new Schema<
             },
             validate: function () {
                 return (this as unknown as IProjectSupporter).type !== 0;
-            }
-        },
-        signatureHash: {
-            type: String,
-            required: function () {
-                return (this as unknown as IProjectSupporter).type === 2;
-            },
-            validate: function () {
-                return (this as unknown as IProjectSupporter).type === 2;
-            }
-        },
-        signedMessage: {
-            type: String,
-            required: function () {
-                return (this as unknown as IProjectSupporter).type === 2;
-            },
-            validate: function () {
-                return (this as unknown as IProjectSupporter).type === 2;
-            }
-        },
-        signingAddress: {
-            type: String,
-            validate: function () {
-                return (this as unknown as IProjectSupporter).type === 2;
             }
         }
     },
