@@ -1,5 +1,7 @@
 import { Alchemy, Network } from 'alchemy-sdk';
 import { ethers } from 'ethers';
+import { createPublicClient, http } from 'viem';
+import { optimism } from 'viem/chains';
 
 // Optional config object, but defaults to the API key 'demo' and Network 'eth-mainnet'.
 const settings = {
@@ -67,4 +69,53 @@ export async function getEditions(): Promise<Edition[]> {
         owner: v[3] as string,
         id: v[4] as string
     }));
+}
+
+const publicClient = createPublicClient({ chain: optimism, transport: http() });
+
+export async function getLogs(editionId: number) {
+    return publicClient.getLogs({
+        address: ProjectContractAddress,
+        args: {
+            editionId: BigInt(editionId || 0)
+        },
+        event: {
+            type: 'event',
+            anonymous: false,
+            inputs: [
+                {
+                    name: 'believer',
+                    internalType: 'address',
+                    type: 'address',
+                    indexed: true
+                },
+                {
+                    name: 'editionId',
+                    internalType: 'uint256',
+                    type: 'uint256',
+                    indexed: true
+                },
+                {
+                    name: 'hashOne',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                },
+                {
+                    name: 'hashTwo',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                },
+                {
+                    name: 'hashThree',
+                    internalType: 'bytes32',
+                    type: 'bytes32',
+                    indexed: false
+                }
+            ],
+            name: 'EditionBelieved'
+        },
+        fromBlock: 108947105n
+    });
 }

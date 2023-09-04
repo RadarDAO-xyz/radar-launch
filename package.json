@@ -57,7 +57,8 @@
     "memcached": "^2.2.2",
     "mongoose": "^7.3.1",
     "nodemailer": "^6.9.4",
-    "rate-limit-memcached": "^0.6.0"
+    "rate-limit-memcached": "^0.6.0",
+    "viem": "^1.10.1"
   },
   "lint-staged": {
     "*.js,*.ts,*.cjs,*.mjs": "eslint --fix"

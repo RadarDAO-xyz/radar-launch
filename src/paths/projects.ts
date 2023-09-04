@@ -62,6 +62,11 @@ ProjectsRouter.post(
             });
         }
         (req.body as Record<string, Types.ObjectId>).founder = founder._id;
+        delete (req.body as Record<string, Types.ObjectId>).nftTokenCache;
+        delete (req.body as Record<string, Types.ObjectId>).lastSupporterUpdate;
+        delete (req.body as Record<string, Types.ObjectId>).launched_at;
+        delete (req.body as Record<string, Types.ObjectId>).supporter_count;
+        delete (req.body as Record<string, Types.ObjectId>).vote_count;
         next();
     },
     create(Project, () => true, true),
@@ -123,7 +128,18 @@ ProjectsRouter.patch(
     update(
         Project,
         (req) => req.doc?.founder.toString() === req.user?._id.toString(),
-        { deniedFields: ['status', '__v', 'curation'] }
+        {
+            deniedFields: [
+                'status',
+                '__v',
+                'curation',
+                'nftTokenCache',
+                'lastSupporterUpdate',
+                'launched_at',
+                'supporter_count',
+                'vote_count'
+            ]
+        }
     )
 );
 

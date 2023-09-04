@@ -7,7 +7,8 @@ import { ArrayType } from '../globals';
 import {
     AlchemyAPI,
     ProjectContractAddress,
-    getEditions
+    getEditions,
+    getLogs
 } from '../util/alchemy';
 import User, { UserDocument } from './User';
 
@@ -48,12 +49,18 @@ export interface IProject {
         end: string; // ISO Datestring
     };
     nftTokenCache?: string;
+    lastSupporterUpdate?: string;
 }
 
 export interface IProjectMethods {
     getUrl(): string;
     getEmails(): string[];
     getNFTOwners(): Promise<(UserDocument | string)[]>;
+    getBelievers(): Promise<(UserDocument | string)[]>;
+    updateSupporterCount(args: {
+        believerCount?: number;
+        supporterCount?: number;
+    }): Promise<void>;
 }
 
 // Create a new Model type that knows about IUserMethods...
@@ -177,7 +184,8 @@ const projectSchema = new Schema<IProject, ProjectModel, IProjectMethods>(
             },
             { _id: false }
         ),
-        nftTokenCache: String
+        nftTokenCache: String,
+        lastSupporterUpdate: String
     },
     { timestamps: true, toJSON: { getters: true } }
 );
@@ -205,6 +213,43 @@ projectSchema.method('getNFTOwners', async function () {
             ) ?? addr
     ) as (UserDocument | string)[];
 });
+
+projectSchema.method('getBelievers', async function () {
+    if (!this.nftTokenCache) return [];
+    const addresses = (await getLogs(this.nftTokenCache).then((logs) =>
+        logs.map((x) => x.args.believer)
+    )) as string[];
+
+    const users = await User.findManyByAuth(addresses);
+    return [...new Set(addresses).values()].map(
+        (addr) =>
+            users.find((u) =>
+                u.wallets.find(
+                    (w) => w.address?.toLowerCase() === addr.toLowerCase()
+                )
+            ) ?? addr
+    ) as (UserDocument | string)[];
+});
+
+projectSchema.method(
+    'updateSupporterCount',
+    async function (args: { believerCount?: number; supporterCount?: number }) {
+        let { believerCount, supporterCount } = args;
+        if (!believerCount)
+            believerCount = await this.getBelievers().then(
+                (x: unknown[]) => x.length
+            );
+
+        if (!supporterCount)
+            supporterCount = await ProjectSupporter.find({
+                project: this._id
+            }).then((x) => x.length);
+
+        this.supporter_count = (believerCount || 0) + (believerCount || 0);
+        this.lastSupporterUpdate = new Date().toISOString();
+        return this.save();
+    }
+);
 
 projectSchema.static('cacheNFTTokens', async function () {
     const editions = await getEditions();

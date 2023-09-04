@@ -31,9 +31,12 @@ ProjectsSupportersRouter.post(
 ProjectsSupportersRouter.get(
     '/believers',
     rl('ProjectSupportersFetch', 30, 15),
-    readMany(ProjectSupporter, () => true, {
-        filter: (req) => ({ project: { $eq: req.doc?._id }, type: 2 })
-    })
+    async (req, res) => {
+        const project = req.doc as ProjectDocument;
+        const believers = await project.getBelievers();
+        project.updateSupporterCount({ believerCount: believers.length });
+        res.json(believers).end();
+    }
 );
 
 ProjectsSupportersRouter.use(authenticate(true));
@@ -49,8 +52,6 @@ ProjectsSupportersRouter.get(
                     ? { type: 0 }
                     : 'contributors' in req.query
                     ? { type: 1 }
-                    : 'believers' in req.query
-                    ? { type: 2 }
                     : {}
             )
     })
@@ -70,7 +71,7 @@ ProjectsSupportersRouter.get(
             })) as ProjectDocument;
         }
 
-        const [nftOwners, supporters] = await Promise.all([
+        const [nftOwners, believers, supporters] = await Promise.all([
             (req.doc as ProjectDocument).getNFTOwners().then((ows) =>
                 ows.map((o) => {
                     if (typeof o === 'string') {
@@ -91,6 +92,26 @@ ProjectsSupportersRouter.get(
                     }
                 })
             ),
+            (req.doc as ProjectDocument).getBelievers().then((bvs) =>
+                bvs.map((b) => {
+                    if (typeof b === 'string') {
+                        return {
+                            type: 'Believer',
+                            address: b.toLowerCase()
+                        };
+                    } else {
+                        return {
+                            type: 'Believer',
+                            name: b.name === 'Your name' ? undefined : b.name,
+                            email: b.email,
+                            address: b.wallets
+                                .find((x) => x.address)
+                                ?.address?.toLowerCase(),
+                            social: b.socials
+                        };
+                    }
+                })
+            ),
             ProjectSupporter.find(
                 Object.assign(
                     { project: { $eq: req.doc?._id } },
@@ -98,8 +119,6 @@ ProjectsSupportersRouter.get(
                         ? { type: 0 }
                         : 'contributors' in req.query
                         ? { type: 1 }
-                        : 'believers' in req.query
-                        ? { type: 2 }
                         : {}
                 )
             ).then((a) =>
@@ -110,21 +129,29 @@ ProjectsSupportersRouter.get(
             )
         ]);
 
-        const csv = await json2csv([...nftOwners, ...supporters], {
-            keys: [
-                'type',
-                'name',
-                'address',
-                'email',
-                'social',
-                'skillset',
-                'contribution',
-                'signatureHash',
-                'signedMessage',
-                'signingAddress'
-            ],
-            emptyFieldValue: ''
+        (req.doc as ProjectDocument).updateSupporterCount({
+            believerCount: believers.length,
+            supporterCount: supporters.length
         });
+
+        const csv = await json2csv(
+            [...nftOwners, ...believers, ...supporters],
+            {
+                keys: [
+                    'type',
+                    'name',
+                    'address',
+                    'email',
+                    'social',
+                    'skillset',
+                    'contribution',
+                    'signatureHash',
+                    'signedMessage',
+                    'signingAddress'
+                ],
+                emptyFieldValue: ''
+            }
+        );
 
         res.set('Content-Type', 'text/csv');
         res.set('Content-Disposition', contentDisposition(req.doc?.title));
