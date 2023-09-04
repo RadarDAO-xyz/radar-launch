@@ -16,6 +16,8 @@ export interface IPool {
     video?: string;
     brief_button_link: string;
     event_button_link: string;
+    brief_button_text: string;
+    event_button_text: string;
     is_hidden: boolean;
 }
 
@@ -46,6 +48,14 @@ const poolSchema = new Schema<IPool>(
             required: true
         },
         event_button_link: {
+            type: String,
+            required: true
+        },
+        brief_button_text: {
+            type: String,
+            required: true
+        },
+        event_button_text: {
             type: String,
             required: true
         },
