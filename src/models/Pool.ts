@@ -10,7 +10,7 @@ export interface IPool {
     title: string;
     subtitle: string;
     description: string;
-    pool_amount: number;
+    pool_amount?: number;
     hero_image?: string;
     sponsors: Sponsor[];
     video?: string;
@@ -36,8 +36,7 @@ const poolSchema = new Schema<IPool>(
             required: true
         },
         pool_amount: {
-            type: Number,
-            required: true
+            type: Number
         },
         hero_image: {
             type: String,
