@@ -77,7 +77,7 @@ export async function getLogs(editionId: number) {
     return publicClient.getLogs({
         address: ProjectContractAddress,
         args: {
-            editionId: BigInt(editionId || 0)
+            editionId: BigInt(editionId)
         },
         event: {
             anonymous: false,
