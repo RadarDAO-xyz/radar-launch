@@ -28,6 +28,8 @@ export interface IProject {
     description: string;
     thumbnail?: string;
     video_url: string;
+    // TODO: make required once all videos are on IPFS
+    video_id?: string;
     tldr: string;
     brief: string;
     tags: string[];
@@ -98,6 +100,10 @@ const projectSchema = new Schema<IProject, ProjectModel, IProjectMethods>(
         video_url: {
             type: String,
             required: true
+        },
+        video_id: {
+            type: String
+            // TODO: make required once all videos are on IPFS
         },
         tldr: {
             type: String,
