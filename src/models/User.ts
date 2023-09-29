@@ -95,7 +95,7 @@ userSchema.pre('save', function () {
 
 userSchema.static(
     'findByDidOrAuth',
-    async function (did: string, idToken?: string) {
+    async function (did: string, address?: string) {
         return User.findOne({
             $or: [
                 {
@@ -103,8 +103,8 @@ userSchema.static(
                         $eq: did
                     }
                 },
-                ...(idToken !== undefined
-                    ? [{ _id: { $eq: idToken.toUpperCase() } }]
+                ...(address !== undefined
+                    ? [{ 'wallets.address': { $eq: address.toUpperCase() } }]
                     : [])
             ]
         });
