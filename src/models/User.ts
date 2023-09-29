@@ -25,6 +25,7 @@ export interface IUser {
     wallets: WalletResolvable[];
     email?: string;
     bypasser: boolean;
+    did?: string;
 }
 
 interface UserModel extends Model<IUser> {
@@ -62,7 +63,8 @@ const userSchema = new Schema<IUser, UserModel>(
             )
         ],
         email: String,
-        bypasser: { type: Boolean, default: false, immutable: true }
+        bypasser: { type: Boolean, default: false, immutable: true },
+        did: String
     },
     { timestamps: true }
 );
@@ -76,7 +78,8 @@ userSchema.method('toJSON', function () {
         socials: this.socials,
         wallets: this.wallets
             .map((w: WalletResolvable) => w.address)
-            .filter((x: string | undefined) => x)
+            .filter((x: string | undefined) => x),
+        did: this.did
     };
 });
 
