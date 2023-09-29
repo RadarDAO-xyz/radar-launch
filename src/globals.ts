@@ -12,7 +12,6 @@ declare global {
             EMAIL_PASS: string;
             ALCHEMY_KEY: string;
             COOKIE_SECRET: string;
-            PRIVY_VERIFICATION_KEY: string;
             PRIVY_APP_ID: string;
             PRIVY_SECRET: string;
         }
