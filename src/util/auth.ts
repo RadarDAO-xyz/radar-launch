@@ -36,25 +36,27 @@ export function authenticate(required = false) {
     return async function (req: Request, res: Response, next: NextFunction) {
         if (req.user) return next();
         if (req.headers.authorization) {
-            const idToken = req.headers.authorization?.split(' ')[1];
+            const authToken = req.headers.authorization?.split(' ')[1];
             if (
                 process.env.NODE_ENV === 'development' && // If it's a local dev version, and supplied bearer is an ObjectId, use fake login
-                isValidObjectId(idToken)
+                isValidObjectId(authToken)
             ) {
                 req.user =
-                    (await User.findOne({ _id: { $eq: idToken } })) ??
+                    (await User.findOne({ _id: { $eq: authToken } })) ??
                     undefined;
             } else {
                 try {
-                    const payload = await privyClient.verifyAuthToken(idToken);
+                    const payload = await privyClient.verifyAuthToken(
+                        authToken
+                    );
 
                     const user = await privyClient.getUser(payload.userId);
 
-                    if (user.wallet?.address) {
-                        req.user =
-                            (await User.findByAuth(user.wallet.address)) ??
-                            undefined;
-                    }
+                    req.user =
+                        (await User.findByDidOrAuth(
+                            user.id,
+                            user.wallet?.address
+                        )) ?? undefined;
                 } catch (e) {
                     return res.status(400).json({
                         message: 'JWT Verification failed',
@@ -62,7 +64,7 @@ export function authenticate(required = false) {
                     });
                 }
             }
-            if (req.user) req.session.userId = req.user.id;
+            if (req.user) req.session.userId = req.user._id.toString();
         } else if (req.session.userId) {
             req.user = (await User.findById(req.session.userId)) ?? undefined;
         }

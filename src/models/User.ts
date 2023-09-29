@@ -29,6 +29,10 @@ export interface IUser {
 }
 
 interface UserModel extends Model<IUser> {
+    findByDidOrAuth(
+        did: string,
+        idToken?: string
+    ): Promise<HydratedDocument<IUser>> | null;
     findByAuth(idToken: string): Promise<HydratedDocument<IUser>> | null;
     findManyByAuth(idTokens: string[]): Promise<HydratedDocument<IUser>[]> | [];
 }
@@ -88,6 +92,24 @@ userSchema.pre('save', function () {
         if (wallet.address) wallet.address = wallet.address.toUpperCase();
     });
 });
+
+userSchema.static(
+    'findByDidOrAuth',
+    async function (did: string, idToken?: string) {
+        return User.findOne({
+            $or: [
+                {
+                    did: {
+                        $eq: did
+                    }
+                },
+                ...(idToken !== undefined
+                    ? [{ _id: { $eq: idToken.toUpperCase() } }]
+                    : [])
+            ]
+        });
+    }
+);
 
 userSchema.static('findByAuth', async function (tokenId: string) {
     return User.findOne({

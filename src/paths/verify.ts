@@ -23,20 +23,21 @@ VerifyRouter.post('/', rl('Verify', 60, 5), async (req, res) => {
         return res.status(400).json({ name: 'Verification Failed' });
     }
 
-    const walletAddress = user.wallet?.address;
-
-    if (walletAddress !== undefined) {
-        let existingUser = await User.findByAuth(walletAddress);
-        if (!existingUser)
-            existingUser = await User.create({
-                wallets: user.linkedAccounts,
-                did: user.id
-            });
-        req.session.userId = existingUser.id;
-        return res.status(200).json({ name: 'Verification Successful' });
+    let existingUser = await User.findByDidOrAuth(
+        user.id,
+        user.wallet?.address
+    );
+    if (!existingUser) {
+        existingUser = await User.create({
+            wallets: user.linkedAccounts,
+            did: user.id
+        });
     } else {
-        return res.status(400).json({ name: 'Verification Failed' });
+        existingUser.wallets = user.linkedAccounts;
+        await existingUser.save();
     }
+    req.session.userId = existingUser._id.toString();
+    return res.status(200).json({ name: 'Verification Successful' });
 });
 
 export default VerifyRouter;
