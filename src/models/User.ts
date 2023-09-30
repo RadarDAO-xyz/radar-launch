@@ -31,7 +31,7 @@ export interface IUser {
 interface UserModel extends Model<IUser> {
     findByDidOrAuth(
         did: string,
-        idToken?: string
+        wallets: string[]
     ): Promise<HydratedDocument<IUser>> | null;
     findByAuth(idToken: string): Promise<HydratedDocument<IUser>> | null;
     findManyByAuth(idTokens: string[]): Promise<HydratedDocument<IUser>[]> | [];
@@ -95,7 +95,7 @@ userSchema.pre('save', function () {
 
 userSchema.static(
     'findByDidOrAuth',
-    async function (did: string, address?: string) {
+    async function (did: string, addresses: string[]) {
         return User.findOne({
             $or: [
                 {
@@ -103,9 +103,11 @@ userSchema.static(
                         $eq: did
                     }
                 },
-                ...(address !== undefined
-                    ? [{ 'wallets.address': { $eq: address.toUpperCase() } }]
-                    : [])
+                {
+                    'wallets.address': {
+                        $in: addresses.map((x) => x.toUpperCase())
+                    }
+                }
             ]
         });
     }

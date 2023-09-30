@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Document, Types, isValidObjectId } from 'mongoose';
 import User, { IUser } from '../models/User';
 import { privyClient } from './privy';
+import { WalletWithMetadata } from '@privy-io/server-auth';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -52,11 +53,16 @@ export function authenticate(required = false) {
 
                     const user = await privyClient.getUser(payload.userId);
 
+                    const wallets = user.linkedAccounts
+                        .filter(
+                            (account): account is WalletWithMetadata =>
+                                account.type === 'wallet'
+                        )
+                        .map((account) => account.address);
+
                     req.user =
-                        (await User.findByDidOrAuth(
-                            user.id,
-                            user.wallet?.address
-                        )) ?? undefined;
+                        (await User.findByDidOrAuth(user.id, wallets)) ??
+                        undefined;
                 } catch (e) {
                     return res.status(400).json({
                         message: 'JWT Verification failed',
@@ -64,7 +70,7 @@ export function authenticate(required = false) {
                     });
                 }
             }
-            if (req.user) req.session.userId = req.user._id.toString();
+            if (req.user) req.session.userId = req.user.id;
         } else if (req.session.userId) {
             req.user = (await User.findById(req.session.userId)) ?? undefined;
         }
