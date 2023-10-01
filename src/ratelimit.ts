@@ -2,8 +2,8 @@ import { Options, rateLimit } from 'express-rate-limit';
 import Memcached from 'memcached';
 import MemcachedStore from 'rate-limit-memcached';
 
-export const MemcachedClient = process.env.MEMCACHED_SERVERS
-    ? new Memcached(process.env.MEMCACHED_SERVERS)
+export const MemcachedClient = process.env.MEMCACHED_SERVER
+    ? new Memcached([process.env.MEMCACHED_SERVER])
     : undefined;
 
 /**

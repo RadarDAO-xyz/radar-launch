@@ -14,6 +14,7 @@ declare global {
             COOKIE_SECRET: string;
             PRIVY_APP_ID: string;
             PRIVY_SECRET: string;
+            MEMCACHED_SERVER?: string;
         }
     }
 }
