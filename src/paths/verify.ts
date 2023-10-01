@@ -44,6 +44,7 @@ VerifyRouter.post('/', rl('Verify', 60, 5), async (req, res) => {
         req.session.userId = existingUser.id;
         return res.status(200).json({ name: 'Verification Successful' });
     } catch (e) {
+        console.error(e);
         return res.status(400).json({
             message: 'JWT Verification failed',
             provided: req.headers.authorization
