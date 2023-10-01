@@ -1,6 +1,6 @@
 # to create private memcached instance with Dockerfile
 services:
-  - type: pserv
+  - type: web
     name: memcached
     env: docker
-    plan: starter
+    plan: free
