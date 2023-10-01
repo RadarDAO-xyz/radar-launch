@@ -14,5 +14,11 @@ module.exports = {
         HTTPS_PORT: 445,
         NODE_ENV: 'production',
         BASE_URL: ''
+    },
+    env_development: {
+        PORT: 4000,
+        HTTPS_PORT: undefined,
+        NODE_ENV: 'development',
+        BASE_URL: 'launch'
     }
 };
