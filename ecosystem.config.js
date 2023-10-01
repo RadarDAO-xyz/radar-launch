@@ -7,18 +7,21 @@ module.exports = {
         PORT: 80,
         HTTPS_PORT: 443,
         NODE_ENV: 'development',
-        BASE_URL: 'launch'
+        BASE_URL: 'launch',
+        MEMCACHED_SERVERS: ['127.0.0.1:11211']
     },
     env_production: {
         PORT: 82,
         HTTPS_PORT: 445,
         NODE_ENV: 'production',
-        BASE_URL: ''
+        BASE_URL: '',
+        MEMCACHED_SERVERS: ['127.0.0.1:11211']
     },
     env_development: {
         PORT: 4000,
         HTTPS_PORT: undefined,
         NODE_ENV: 'development',
-        BASE_URL: 'launch'
+        BASE_URL: 'launch',
+        MEMCACHED_SERVERS: undefined
     }
 };
