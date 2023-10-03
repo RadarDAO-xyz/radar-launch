@@ -25,9 +25,14 @@ export interface IUser {
     wallets: WalletResolvable[];
     email?: string;
     bypasser: boolean;
+    did?: string;
 }
 
 interface UserModel extends Model<IUser> {
+    findByDidOrAuth(
+        did: string,
+        wallets: string[]
+    ): Promise<HydratedDocument<IUser>> | null;
     findByAuth(idToken: string): Promise<HydratedDocument<IUser>> | null;
     findManyByAuth(idTokens: string[]): Promise<HydratedDocument<IUser>[]> | [];
 }
@@ -62,7 +67,8 @@ const userSchema = new Schema<IUser, UserModel>(
             )
         ],
         email: String,
-        bypasser: { type: Boolean, default: false, immutable: true }
+        bypasser: { type: Boolean, default: false, immutable: true },
+        did: String
     },
     { timestamps: true }
 );
@@ -76,7 +82,8 @@ userSchema.method('toJSON', function () {
         socials: this.socials,
         wallets: this.wallets
             .map((w: WalletResolvable) => w.address)
-            .filter((x: string | undefined) => x)
+            .filter((x: string | undefined) => x),
+        did: this.did
     };
 });
 
@@ -85,6 +92,26 @@ userSchema.pre('save', function () {
         if (wallet.address) wallet.address = wallet.address.toUpperCase();
     });
 });
+
+userSchema.static(
+    'findByDidOrAuth',
+    async function (did: string, addresses: string[]) {
+        return User.findOne({
+            $or: [
+                {
+                    did: {
+                        $eq: did
+                    }
+                },
+                {
+                    'wallets.address': {
+                        $in: addresses.map((x) => x.toUpperCase())
+                    }
+                }
+            ]
+        });
+    }
+);
 
 userSchema.static('findByAuth', async function (tokenId: string) {
     return User.findOne({

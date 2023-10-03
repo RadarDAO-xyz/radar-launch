@@ -20,6 +20,23 @@ UsersRouter.get('/@me', (req, res) => {
     res.end();
 });
 
+UsersRouter.get('/address/:address', async (req, res) => {
+    const address = req.params.address.toUpperCase();
+    if (!address) return res.status(400).end();
+
+    const doc = await User.findOne({ 'wallets.address': address });
+    if (!doc) return res.status(404).end();
+
+    const result = doc.toJSON();
+
+    return res.json({
+        ...result,
+        wallets: (result.wallets as unknown as string[]).filter(
+            (w) => w === address
+        )
+    });
+});
+
 UsersRouter.use('/:id', prefetch(User));
 UsersRouter.get('/:id', read(User));
 UsersRouter.get('/:id/profile', (req, res) => res.redirect(req.doc?.profile)); // Redirects to the hosted link (imgur)

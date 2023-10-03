@@ -2,10 +2,9 @@ import { Options, rateLimit } from 'express-rate-limit';
 import Memcached from 'memcached';
 import MemcachedStore from 'rate-limit-memcached';
 
-export const MemcachedClient =
-    process.env.NODE_ENV === 'production'
-        ? new Memcached(['127.0.0.1:11211'])
-        : undefined;
+export const MemcachedClient = process.env.MEMCACHED_SERVER
+    ? new Memcached([process.env.MEMCACHED_SERVER])
+    : undefined;
 
 /**
  *
