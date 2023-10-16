@@ -74,9 +74,12 @@ export const EmailTemplates = {
 };
 
 export function sendMail(options: Mail.Options) {
-    return mailTransporter.sendMail({
-        from: 'RADAR Launch <launch@radardao.xyz>',
-        bcc: 'admin@radardao.xyz, contact@fancyy.xyz',
-        ...options
-    });
+    if (process.env.NODE_ENV === 'production') {
+        return mailTransporter.sendMail({
+            from: 'RADAR Launch <launch@radardao.xyz>',
+            bcc: 'admin@radardao.xyz, contact@fancyy.xyz',
+            ...options
+        });
+    }
+    console.log('Not sending email in development mode.', options);
 }
