@@ -77,44 +77,32 @@ export async function getLogs(editionId: number) {
     return publicClient.getLogs({
         address: ProjectContractAddress,
         args: {
-            editionId: BigInt(editionId || 0)
+            editionId: BigInt(editionId)
         },
         event: {
-            type: 'event',
             anonymous: false,
             inputs: [
                 {
-                    name: 'believer',
-                    internalType: 'address',
-                    type: 'address',
-                    indexed: true
-                },
-                {
-                    name: 'editionId',
+                    indexed: true,
                     internalType: 'uint256',
-                    type: 'uint256',
-                    indexed: true
+                    name: 'editionId',
+                    type: 'uint256'
                 },
                 {
-                    name: 'hashOne',
-                    internalType: 'bytes32',
-                    type: 'bytes32',
-                    indexed: false
+                    indexed: true,
+                    internalType: 'address',
+                    name: 'believer',
+                    type: 'address'
                 },
                 {
-                    name: 'hashTwo',
-                    internalType: 'bytes32',
-                    type: 'bytes32',
-                    indexed: false
-                },
-                {
-                    name: 'hashThree',
-                    internalType: 'bytes32',
-                    type: 'bytes32',
-                    indexed: false
+                    indexed: false,
+                    internalType: 'string',
+                    name: 'tags',
+                    type: 'string'
                 }
             ],
-            name: 'EditionBelieved'
+            name: 'EditionBelieved',
+            type: 'event'
         },
         fromBlock: 108947105n
     });
