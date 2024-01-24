@@ -8,7 +8,7 @@
     "prestart": "npm run build && pm2 stop ecosystem.config.js",
     "start": "pm2 start ecosystem.config.js --env production",
     "start:staging": "yarn prestart && pm2-runtime start ecosystem.config.js --env development",
-    "dev": "BASE_URL=launch NODE_ENV=development ts-node src/index.ts",
+    "dev": "PORT=4000 BASE_URL=launch NODE_ENV=development ts-node src/index.ts",
     "build": "tsc",
     "prepare": "husky install",
     "fix-project-counts": "ts-node ./scripts/fix-counts.ts",

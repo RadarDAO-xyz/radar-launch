@@ -36,16 +36,22 @@ app.use((req, res, next) => {
     next();
 });
 
+const validOrigins = [
+    'https://www.launch.radardao.xyz',
+    'https://launch.radardao.xyz',
+    'https://radar-launch.netlify.app',
+    'https://radarlaunch.app',
+    'https://radar-launch-frontend.vercel.app'
+];
+
+if (process.env.NODE_ENV === 'development') {
+    validOrigins.push('http://localhost:3000');
+}
+
 // Respond with appropriate CORS Headers
 app.use(
     cors({
-        origin: [
-            'https://www.launch.radardao.xyz',
-            'https://launch.radardao.xyz',
-            'https://radar-launch.netlify.app',
-            'https://radarlaunch.app',
-            'https://radar-launch-frontend.vercel.app'
-        ],
+        origin: validOrigins,
         credentials: true
     })
 );
