@@ -41,7 +41,8 @@ const validOrigins = [
     'https://launch.radardao.xyz',
     'https://radar-launch.netlify.app',
     'https://radarlaunch.app',
-    'https://radar-launch-frontend.vercel.app'
+    'https://radar-launch-frontend.vercel.app',
+    'https://radardao.xyz/launch'
 ];
 
 if (process.env.NODE_ENV === 'development') {
